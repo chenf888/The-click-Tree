@@ -6,7 +6,7 @@ let modInfo = {
 
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (10),
+	initialStartPoints: new Decimal (0),
 	offlineLimit: 1,
 }
 
