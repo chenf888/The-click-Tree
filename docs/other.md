@@ -1,8 +1,8 @@
-# Other Things
+# 其他内容
 
 ## CSS
-A good way to give your game a unique feel is to customize the appearance of it. Modifying the CSS files helps you to do that on a global level. The CSS is broken up into several files to make it easier to find what is relevant to you.
-CSS tip: Every component is automatically given a CSS class with the same name as its layer id. You can use this toapply something specifically for a single layer! You can also combine classes, such as .p.achievement or .c.locked, to change specific things in specific layers.
+让游戏具有独特风格的一个好方法是自定义其外观。修改 CSS 文件可以帮助你在全局层面做到这一点。CSS 被拆分成多个文件，以便你更容易找到与你自己相关的内容。
+CSS 小贴士：每个组件都会自动获得一个与其层 id 同名的 CSS 类。你可以利用这一点来为单个层应用特定样式！你还可以组合类，例如 `.p.achievement` 或 `.c.locked`，来更改特定层中的特定内容。
 
 ## Temp
-temp/tmp (either works) is a data structure that is a copy of layers (which contains all of the layer data you defined plus default things), but it replaces most functions with the result of calling those functions. e.g. if layer p's baseAmount is based on points, layers.p.baseAmount is a function that returns player.points. The player currently has 54 points, so temp.p.baseAmount is 54 (as a Decimal). You can use temp to improve performance.
+`temp` / `tmp`（两者均可）是一个数据结构，它是 layers 的副本（包含你定义的所有层数据以及默认内容），但它会将大多数函数替换为调用这些函数的结果。例如，如果层 p 的 `baseAmount` 是基于点数的，那么 `layers.p.baseAmount` 是一个返回 `player.points` 的函数。玩家当前有 54 个点数，因此 `temp.p.baseAmount` 就是 54（作为一个 Decimal）。你可以使用 `temp` 来提高性能。

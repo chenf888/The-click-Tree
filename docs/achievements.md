@@ -1,54 +1,54 @@
-# Achievements
+# 成就
 
-Achievements are awarded to the player when they meet a certain goal, and optionally give some benefit.
+当玩家达成某个目标时，会获得成就，并且可以选择性地提供一些收益。
 
-You can make global achievements by putting them in a side layer by making its row equal to "side" instead of a number.
+你可以通过将侧边层（side layer）的 `row` 设置为 `"side"` 而不是数字，来创建全局成就（global achievements）。
 
-Useful functions for dealing with achievements and implementing their effects:
+处理成就及实现其效果的有用函数：
 
-- hasAchievement(layer, id): determine if the player has the Achievement.
-- achievementEffect(layer, id): Returns the current effects of the achievement, if any.
+- `hasAchievement(layer, id)`：判断玩家是否拥有该成就。
+- `achievementEffect(layer, id)`：返回成就当前的效果（如果有的话）。
 
-Achievements should be formatted like this:
+成就应该按照以下格式编写：
 
 ```js
 achievements: {
     11: {
-        name: "Blah",
-        more features
+        name: "示例成就",
+        // 更多特性
     },
-    etc
+    // 等等
 }
 ```
 
-Usually, each achievement should have an id where the first digit is the row and the second digit is the column.
+通常，每个成就都应该有一个 ID，其中第一位数字表示行，第二位数字表示列。
 
-Individual achievement can have these features:
+单个成就可以包含以下特性：
 
-- name: **optional**. displayed at the top of the achievement. The only visible text. It can also be a function that returns updating text. Can use basic HTML.
+- `name`：**可选**。显示在成就顶部的文本，也是唯一可见的文本。可以是一个返回动态文本的函数。可以使用基础 HTML。
 
-- done(): A function returning a boolean to determine if the achievement should be awarded.
+- `done()`：一个返回布尔值的函数，用于判断是否应颁发该成就。
 
-- tooltip: Default tooltip for the achievement, appears when it is hovered over. Should convey the goal and any reward for completing the achievement. It can also be a function that returns updating text. Can use basic HTML. Setting this to "" disables the tooltip.
+- `tooltip`：成就的默认提示框，鼠标悬停时显示。应传达达成目标的条件以及完成成就的任何奖励。也可以是一个返回动态文本的函数。可以使用基础 HTML。若设为 `""` 则禁用提示框。
 
-- effect(): **optional**. A function that calculates and returns the current values of any bonuses from the achievement. Can return a value or an object containing multiple values.
+- `effect()`：**可选**。一个计算并返回成就当前任何加成的函数。可以返回一个数值，或者一个包含多个数值的对象。
 
-- unlocked(): **optional**. A function returning a bool to determine if the achievement is visible or not. Default is unlocked.
+- `unlocked()`：**可选**。返回布尔值的函数，用于判断成就是否可见。默认为 `unlocked`（已解锁）。
 
-- onComplete() - **optional**. this function will be called when the achievement is completed.
+- `onComplete()`：**可选**。当成就完成时会调用此函数。
 
-- image: **optional**, puts the image from the given URL (relative or absolute) in the achievement
+- `image`：**可选**。在成就中显示来自给定 URL（相对或绝对路径）的图片。
 
-- style: **optional**. Applies CSS to this achievement, in the form of an object where the keys are CSS attributes, and the values are the values for those attributes (both as strings).
+- `style`：**可选**。对该成就应用 CSS 样式，形式为一个对象，其中键是 CSS 属性，值是对应的属性值（均为字符串）。
 
-- textStyle: **optional**. Applies CSS to the text, in the form of an object where the keys are CSS attributes, and the values are the values for those attributes (both as strings).
+- `textStyle`：**可选**。对成就内的文本应用 CSS 样式，形式与 `style` 相同。
 
-- layer: **assigned automagically**. It's the same value as the name of this layer, so you can do `player[this.layer].points` or similar.
+- `layer`：**自动分配**。它的值与该层的名称相同，因此你可以使用 `player[this.layer].points` 之类的写法。
 
-- id: **assigned automagically**. It's the "key" which the achievement was stored under, for convenient access. The achievement in the example's id is 11.
+- `id`：**自动分配**。它是成就存储时所用的“键”，方便访问。示例中成就的 ID 是 11。
 
-- goalTooltip: **optional, deprecated**. Appears when the achievement is hovered over and locked, overrides the basic tooltip. This is to display the goal (or a hint). It can also be a function that returns updating text. Can use basic HTML.
+- `goalTooltip`：**可选，已弃用**。当成就处于锁定状态并被悬停时显示，会覆盖基本提示框。用于显示目标（或提示）。也可以是一个返回动态文本的函数。可以使用基础 HTML。
 
-- doneTooltip: **optional, deprecated**. Appears when the achievement is hovered over and completed, overrides the basic tooltip. This can display what the player achieved (the goal), and the rewards, if any. It can also be a function that returns updating text. Can use basic HTML.
+- `doneTooltip`：**可选，已弃用**。当成就已完成并被悬停时显示，会覆盖基本提示框。可以显示玩家达成了什么目标以及获得的奖励（如果有）。也可以是一个返回动态文本的函数。可以使用基础 HTML。
 
-Disable achievement popups by adding `achievementsPopups: false` to the layer.
+在层中添加 `achievementsPopups: false` 可以禁用成就弹窗提示。

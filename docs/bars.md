@@ -1,8 +1,8 @@
-# Bars
+# 进度条
 
-Bars let you display information in a more direct way. It can be a progress bar, health bar, capacity gauge, or anything else.
+进度条让你能以更直观的方式显示信息。它可以是进度条、生命条、容量指示器，或者其他任何形式。
 
-Bars are defined like other Big Features:
+进度条像其他大型功能一样定义：
 
 ```js
 bars: {
@@ -11,30 +11,28 @@ bars: {
         width: 200,
         height: 50,
         progress() { return 0 },
-        etc
+        // 其他特性
     },
-    etc
+    // 等等
 }
 ```
 
-Features:
+特性：
 
-- direction: UP, DOWN, LEFT, or RIGHT (not strings). Determines the direction that the bar is filled as it progresses. RIGHT means from left to right.
+- `direction`：`UP`、`DOWN`、`LEFT` 或 `RIGHT`（不是字符串）。决定进度条填充的方向。`RIGHT` 表示从左向右填充。
 
-- width, height: The size in pixels of the bar, but as numbers (no "px" at the end).
+- `width`，`height`：进度条的像素尺寸，以数字形式给出（末尾不带“px”）。
 
-- progress(): A function that returns the portion of the bar that is filled, from "empty" at 0 to "full" at 1, updating automatically.
-    (Nothing bad happens if the value goes out of these bounds, and it can be a number or `Decimal`)
+- `progress()`：一个函数，返回进度条填充的部分，从 0（“空”）到 1（“满”），会自动更新。（即使值超出这个范围也不会有问题，可以是数字或 `Decimal`）
 
-- display(): **optional**. A function that returns text to be displayed on top of the bar, can use HTML.
+- `display()`：**可选**。返回显示在进度条顶部的文本的函数，可以使用 HTML。
 
-- unlocked(): **optional**. A function returning a bool to determine if the bar is visible or not. Default is unlocked.
+- `unlocked()`：**可选**。返回布尔值的函数，决定进度条是否可见。默认为解锁（可见）。
 
-- baseStyle, fillStyle, borderStyle, textStyle: **Optional**, Apply CSS to the unfilled portion, filled portion, border, and display text on the bar, in the form of an object where the keys are CSS attributes, and the values are the values for those attributes (both as strings).
+- `baseStyle`，`fillStyle`，`borderStyle`，`textStyle`：**可选**。分别对未填充部分、填充部分、边框和进度条上的显示文本应用 CSS 样式。形式为一个对象，其中键是 CSS 属性，值是对应的属性值（均为字符串）。
 
-- layer: **assigned automagically**. It's the same value as the name of this layer, so you can do `player[this.layer].points` or similar.
+- `layer`：**自动分配**。它的值与该层的名称相同，因此你可以使用 `player[this.layer].points` 之类的写法。
 
-- id: **assigned automagically**. It's the "key" which the bar was stored under, for convenient access. The bar in the example's id is "bigBar".
+- `id`：**自动分配**。它是进度条存储时所用的“键”，方便访问。示例中进度条的 id 是 `"bigBar"`。
 
-
-- instant: **very optional**. If this is true, the bar will instantly snap to the current value instead of animating in between. Good for things involving precise timing.
+- `instant`：**非常可选**。如果设为 `true`，进度条会立即跳转到当前值，而不会有动画过渡。适用于需要精确计时的场合。

@@ -1,59 +1,57 @@
-# Subtabs and Microtabs
+# 子标签页和微标签页
 
-Subtabs are separate sections of a tab that you can view by selecting one at the top of the tab. Microtabs are smaller areas that function in much the same way. You can also embed layers inside of subtabs/microtabs.
+子标签页是标签页中的独立区域，你可以通过选择标签页顶部的选项来查看它们。微标签页是更小的区域，运作方式基本相同。你还可以在子标签页/微标签页中嵌入层。
 
-Subtabs are defined by using the tab format like this, where each element of tabFormat is given the name of that subtab:
+子标签页通过如下方式使用 tabFormat 定义，其中 tabFormat 的每个元素都被赋予该子标签页的名称：
 
 ```js
 tabFormat: {
-    "Main tab": {
-        content: [tab format things],
-        *subtab features*
+    "主标签页": {
+        content: [标签页格式内容],
+        *子标签页特性*
     },
-    "Other tab": {
-        content: [tab format things],
-        *subtab features*
+    "其他标签页": {
+        content: [标签页格式内容],
+        *子标签页特性*
     },
-    etc
+    // 等等
 }
 ```
 
-Microtabs are defined similarly, and use the same features, but are defined in the "microtabs" feature. Each entry is a group of tabs which will appear in a microtabs component. The first set, "stuff", has 2 tabs, and the second, "otherStuff", has none.
+微标签页的定义方式类似，使用相同的特性，但定义在 `microtabs` 特性中。每个条目是一组标签页，将出现在一个微标签页组件中。第一组 "stuff" 有 2 个标签页，第二组 "otherStuff" 没有标签页。
 
 ```js
 microtabs: {
     stuff: {
         first: {
-            content: [tab format things],
-            *subtab features*
+            content: [标签页格式内容],
+            *子标签页特性*
         },
         second: {
-            content: [tab format things],
-            *subtab features*
+            content: [标签页格式内容],
+            *子标签页特性*
         }
     },
     otherStuff: {
-        // There could be another set of microtabs here
+        // 这里可以有另一组微标签页
     }
 }
 ```
 
-Normal subtabs and microtab subtabs both use the same features:
+普通子标签页和微标签页中的子标签页都使用相同的特性：
 
-# Features:
+# 特性
 
-- content: The tab layout code for the subtab, in [the tab layout format](custom-tab-layouts.md).
+- `content`：子标签页的标签页布局代码，格式为[标签页布局格式](custom-tab-layouts.md)。
 
-- style: **optional**. Applies CSS to the whole subtab when switched to, in the form of an "CSS Object", where the keys are CSS attributes, and the values are the values for those attributes (both as strings).
+- `style`：**可选**。切换到该子标签页时，对整个子标签页应用 CSS，形式为一个“CSS 对象”，其中键是 CSS 属性，值是对应的属性值（均为字符串）。
 
-- buttonStyle: **optional**. A CSS object, which affects the appearance of the button for that subtab.
+- `buttonStyle`：**可选**。一个 CSS 对象，影响该子标签页按钮的外观。
 
-- unlocked(): **optional**. a function to determine if the button for this subtab should be visible. By default, a subtab is always unlocked. You can't use the "this" keyword in this function.
+- `unlocked()`：**可选**。一个函数，决定该子标签页的按钮是否可见。默认情况下，子标签页始终解锁。在此函数中不能使用 `this` 关键字。
 
-- shouldNotify()/prestigeNotify(): **optional**, if true, the tab button will be highlighted to notify the player that there is something there.
+- `shouldNotify()` / `prestigeNotify()`：**可选**。如果为 `true`，标签页按钮会高亮显示，以提示玩家那里有内容。
 
-- glowColor: **optional**, specifies the color that the subtab glows. If this subtab is causing the main layer to node glow
-    (and it would't otherwise) the node also glows this color. Is NOT overridden by embedding a layer.
+- `glowColor`：**可选**。指定子标签页发光时的颜色。如果该子标签页导致主层节点发光（且原本不会发光），节点也会以该颜色发光。嵌入层不会覆盖此设置。
 
-- embedLayer: **SIGNIFICANT**, the id of another layer. If you have this, it will override "content", "style" and "shouldNotify",
-                instead displaying the entire layer in the subtab.
+- `embedLayer`：**重要**。另一个层的 id。如果设置了此项，它将覆盖 `content`、`style` 和 `shouldNotify`，而是在子标签页中显示整个层。

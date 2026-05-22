@@ -1,38 +1,37 @@
-# Basic layer breakdown
+# 基础层剖析
 
-This is a relatively minimal layer with few features. Most things will require additional features.
+这是一个功能相对最简化的层，只有很少的特性。大多数情况需要额外的特性。
 
 ```js
 addLayer("p", {
-    startData() { return {                  // startData is a function that returns default data for a layer. 
-        unlocked: true,                     // You can add more variables here to add them to your layer.
-        points: new Decimal(0),             // "points" is the internal name for the main resource of the layer.
+    startData() { return {                  // startData 是一个函数，返回层的默认数据。
+        unlocked: true,                     // 你可以在这里添加更多变量，将它们加入到你的层中。
+        points: new Decimal(0),             // "points" 是该层主要资源内部使用的名称。
     }},
 
-    color: "#4BDC13",                       // The color for this layer, which affects many elements.
-    resource: "prestige points",            // The name of this layer's main prestige resource.
-    row: 0,                                 // The row this layer is on (0 is the first row).
+    color: "#4BDC13",                       // 该层的颜色，会影响许多元素。
+    resource: "prestige points",            // 该层主要 prestige 资源的显示名称。
+    row: 0,                                 // 该层所在的行（0 是第一行）。
 
-    baseResource: "points",                 // The name of the resource your prestige gain is based on.
-    baseAmount() { return player.points },  // A function to return the current amount of baseResource.
+    baseResource: "points",                 // prestige 收益所基于的资源名称。
+    baseAmount() { return player.points },  // 返回当前 baseResource 数量的函数。
 
-    requires: new Decimal(10),              // The amount of the base needed to  gain 1 of the prestige currency.
-                                            // Also the amount required to unlock the layer.
+    requires: new Decimal(10),              // 获得 1 个 prestige 货币所需的 baseResource 数量。
+                                            // 同时也是解锁该层所需的数量。
 
-    type: "normal",                         // Determines the formula used for calculating prestige currency.
-    exponent: 0.5,                          // "normal" prestige gain is (currency^exponent).
+    type: "normal",                         // 决定用于计算 prestige 货币的公式。
+    exponent: 0.5,                          // "normal" 类型的 prestige 收益为 (currency^exponent)。
 
-    gainMult() {                            // Returns your multiplier to your gain of the prestige resource.
-        return new Decimal(1)               // Factor in any bonuses multiplying gain here.
+    gainMult() {                            // 返回 prestige 资源收益的乘数。
+        return new Decimal(1)               // 在这里填入任何乘数类的加成。
     },
-    gainExp() {                             // Returns the exponent to your gain of the prestige resource.
+    gainExp() {                             // 返回 prestige 资源收益的指数。
         return new Decimal(1)
     },
 
-    layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
+    layerShown() { return true },          // 返回布尔值，决定该层节点是否应在树中显示。
 
     upgrades: {
-        // Look in the upgrades docs to see what goes here!
+        // 查看升级文档了解这里应该放什么！
     },
 })
-```

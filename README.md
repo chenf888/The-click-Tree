@@ -1,7 +1,12 @@
-# The-Modding-Tree
+# 点击树
 
-An incremental game engine based on The Prestige Tree. It still requires programming knowledge, but it's mostly pretty easy things and copy/pasting.
+一个基于 The Modding Tree 的点击增量游戏。
 
-[Look here for a tutorial on getting started with modding with TMT](docs/tutorials/getting-started.md)
+## 玩法
+- 点击按钮获取点击分数。
+- 购买升级提升每次点击的收益。
+- 达到一定分数解锁里程碑，获得永久加成。
+- 完成成就，部分成就会提供额外点击倍率。
 
-You can look in the [documentation](docs/!general-info.md) for more information on how it all works, or look at the code in [layers.js](js/layers.js) to see what it all looks like.
+## 开发
+基于 [The Modding Tree](https://github.com/Acamaeda/The-Modding-Tree) 引擎制作。

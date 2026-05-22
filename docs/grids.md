@@ -1,30 +1,30 @@
-# Grids
+# 网格
 
-Grids are an easier way of making a group of similar clickables. They all have the same behavior, but are different based on their data.
+网格是一种更简单的方法，用于创建一组相似的可点击项。它们都具有相同的行为，但根据各自的数据而有所不同。
 
-**NOTE: Gridables are similar to clickables in some respects, but are fundamentally different from normal TMT Big Features in quite a few ways. Be sure to keep these in mind:**
-  - Gridable ids use base 100 instead of base 10, so you can have more than 10 tiles in a row. This means that a grid might look like this:
-    101  102
-    201  202
-  - Individual gridables are not defined individually. All properties go directly into the "grid" object. Functions are called with arguments for the id of the gridables and its associated data, so you can give them the appropriate appearance and properties based on that.
-  - If you need two unrelated grids in a layer, you'll need to use a layer proxy component.
+**注意：网格项在某些方面与可点击项类似，但在不少方面与普通的 TMT 大型功能有根本区别。请务必记住以下几点：**
+- 网格项的 id 使用百进制而不是十进制，这样你可以在同一行中拥有超过 10 个格子。例如，一个网格可能看起来像这样：
+  101  102
+  201  202
+- 网格项不是单独定义的。所有属性都直接放在 `grid` 对象中。函数在调用时会传入网格项的 id 及其关联数据作为参数，因此你可以据此为它们赋予合适的外观和属性。
+- 如果你在一个层中需要两个不相关的网格，你需要使用层代理组件。
 
-Useful functions for dealing with grids:
+处理网格的有用函数：
 
-- getGridData(layer, id): get the data for the chosen gridable
-- setGridData(layer, id, state): set the data for the chosen gridable
-- gridEffect(layer, id): get the effect for the chosen gridable
+- `getGridData(layer, id)`：获取指定网格项的数据
+- `setGridData(layer, id, state)`：设置指定网格项的数据
+- `gridEffect(layer, id)`：获取指定网格项的效果
 
-The grid should be formatted like this:
+网格应按照以下格式编写：
 
 ```js
 grid: {
-    rows: 4, // If these are dynamic make sure to have a max value as well!
+    rows: 4, // 如果这些是动态的，请确保同时设置最大值！
     cols: 5,
     getStartData(id) {
         return 0
     },
-    getUnlocked(id) { // Default
+    getUnlocked(id) { // 默认
         return true
     },
     getCanClick(data, id) {
@@ -37,34 +37,34 @@ grid: {
         return data 
     },
 
-    etc
+    // 其他特性
 }
 ```
 
-Features:
+特性：
 
-- rows, cols: The amount of rows and columns of gridable to display.
+- `rows`，`cols`：要显示的网格行数和列数。
 
-- maxRows, maxCols: **sometimes needed**. If rows or cols are dynamic, you need to define the maximum amount that there can be (you can increase it when you update the game though). These CANNOT be dynamic.
+- `maxRows`，`maxCols`：**有时需要**。如果 `rows` 或 `cols` 是动态的，你需要定义它们可能的最大值（尽管你可以在更新游戏时增加它）。这些值**不能**是动态的。
 
-- getStartData(id): Creates the default data for the gridable at this position. This can be an object, or a regular value.
+- `getStartData(id)`：为该位置的网格项创建默认数据。可以是一个对象，也可以是一个普通值。
 
-- getUnlocked(id): **optional**. Returns true if the gridable at this position should be visible.
+- `getUnlocked(id)`：**可选**。如果该位置的网格项应可见，则返回 `true`。
 
-- getTitle(data, id): **optional**. Returns text that should displayed at the top in a larger font, based on the position and data of the gridable.
+- `getTitle(data, id)`：**可选**。根据网格项的位置和数据，返回应显示在顶部较大字体的文本。
 
-- getDisplay(data, id): **optional**. Returns everything that should be displayed on the gridable after the title, based on the position and data of the gridable.
+- `getDisplay(data, id)`：**可选**。根据网格项的位置和数据，返回应在标题之后显示的所有内容。
 
-- getStyle(data, id): **optional**. Returns CSS to apply to this gridable, in the form of an object where the keys are CSS attributes, and the values are the values for those attributes (both as strings). 
+- `getStyle(data, id)`：**可选**。对该网格项应用 CSS 样式，形式为一个对象，其中键是 CSS 属性，值是对应的属性值（均为字符串）。
 
-- getCanClick(data, id): **optional**. A function returning a bool to determine if you can click a gridable, based on its data and position. If absent, you can always click it.
+- `getCanClick(data, id)`：**可选**。根据网格项的数据和位置，返回一个布尔值，决定你是否可以点击该网格项。如果省略，则始终可以点击。
 
-- onClick(data, id): A function that implements clicking on the gridable, based on its position and data. 
+- `onClick(data, id)`：根据网格项的位置和数据，实现点击网格项时的逻辑。
 
-- onHold(data, id): **optional** A function that is called 20x/sec when the button is held for at least 0.25 seconds.
-                  
-- getEffect(data, id): **optional**. A function that calculates and returns a gridable's effect, based on its position and data. (Whatever that means for a gridable)
+- `onHold(data, id)`：**可选**。当按钮被按住至少 0.25 秒时，每秒调用 20 次的函数。
 
-- getTooltip(data, id): **optional**. Adds a tooltip to the gridables, appears when they hovered over. Can use basic HTML. Default is no tooltip. If this returns an empty value, that also disables the tooltip.
+- `getEffect(data, id)`：**可选**。根据网格项的位置和数据，计算并返回网格项的效果（具体含义由网格项定义）。
 
-- layer: **assigned automagically**. It's the same value as the name of this layer, so you can do `player[this.layer].points` or similar.
+- `getTooltip(data, id)`：**可选**。为网格项添加提示框，鼠标悬停时显示。可以使用基础 HTML。默认为无提示框。如果返回空值，也会禁用提示框。
+
+- `layer`：**自动分配**。它的值与该层的名称相同，因此你可以使用 `player[this.layer].points` 之类的写法。

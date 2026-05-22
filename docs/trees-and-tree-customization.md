@@ -1,54 +1,51 @@
-# Trees and tree customization
+# 树与树自定义
 
-If you want to have something beyond the standard tree on the left tab, you can do that in tree.js. You can change the layout
-of the tree, including making non-layer nodes, change it into something other than a tree, or hide the left tab altogether.
-This also introduces the "tree" component, which can be used in your layers as well.
+如果你希望在左侧标签页中拥有超越标准树的内容，可以在 `tree.js` 中实现。你可以更改树的布局，包括创建非层节点，将其变成树以外的东西，或者完全隐藏左侧标签页。这也引入了 `tree` 组件，该组件也可以在你的层中使用。
 
 ## layoutInfo
-The most important part is layoutInfo, containing:
-- startTab: The id of the default tab to show on the right at the start.
-- startNavTab: The id of the default tab to show on the left at the start.
 
-- showTree: True if the tree tab should be shown at the start of the game. (The other tab will fill the whole page)
-- treeLayout: If present, overrides the tree layout and places nodes as you describe instead (explained in the next section).
+最重要的部分是 `layoutInfo`，包含：
+- `startTab`：开始时右侧默认显示的标签页的 id。
+- `startNavTab`：开始时左侧默认显示的标签页的 id。
 
-Additionally, if you want the main layout to not be a tree, you can edit the "tree-tab" layer at the bottom of tree.js to modify it just like a normal layer's tab. You can even switch between left tabs, using showNavTab(layer) to make that layer appear on the left.
+- `showTree`：如果为 `true`，游戏开始时显示树标签页（另一个标签页将填满整个页面）。
+- `treeLayout`：如果存在，将覆盖树布局，并按照你的描述放置节点（在下一节中说明）。
 
-## Trees
+此外，如果你希望主布局不是树，你可以编辑 `tree.js` 底部的 `tree-tab` 层，像修改普通层的标签页一样修改它。你甚至可以使用 `showNavTab(layer)` 在左侧标签页之间切换，让指定的层显示在左侧。
 
-The tree component is defined as an array of arrays of names of layers or nodes to show in the tree. They work just like layers/
-nodes in the main tree (but branches between nodes will only work on the first node if you have duplicates.)
+## 树
 
-Here is an example tree:
+树组件被定义为一个数组的数组，每个数组包含要在树中显示的层或节点的名称。它们的工作方式与主树中的层/节点类似（但是如果你有重复的节点，节点之间的分支线只会作用于第一个节点）。
+
+以下是一个树的示例：
 ```js
 [["p"],
- ["left", "blank", "right", "blank"]
+ ["left", "blank", "right", "blank"],
  ["a", "b", "blank", "c", "weirdButton"]]
 ```
 
-## Nodes
+## 节点
 
-Nodes are non-layer buttons that can go in trees. They are defined similarly to layers, but with addNode instead of addLayer.
+节点是可以放入树中的非层按钮。它们的定义与层类似，但使用 `addNode` 而不是 `addLayer`。
 
-Features:
+特性：
 
-- color: **optional**, The node's color. (A string in hex format with a #)
+- `color`：**可选**。节点的颜色。（带 `#` 的十六进制字符串）
 
-- symbol: **optional** The text on the button (The id capitalized by default)
+- `symbol`：**可选**。按钮上的文本（默认为首字母大写的 id）。
 
-- canClick(): Returns true if the player can click the node. ()
+- `canClick()`：如果玩家可以点击该节点，则返回 `true`。
 
-- onClick(): The function called when the node is clicked.
+- `onClick()`：点击节点时调用的函数。
 
-- layerShown(): **optional**, A function returning a bool which determines if this node should be visible. It can also return "ghost", which will hide the layer, but its node will still take up space in its tree.
+- `layerShown()`：**可选**。返回布尔值的函数，决定该节点是否应可见。也可以返回 `"ghost"`，这将隐藏节点，但其节点仍会占据树中的空间。
 
-- branches: **optional**. An array of layer/node ids. On a tree, a line will appear from this node to all of the nodes in the list. Alternatively, an entry in the array can be a 2-element array consisting of the id and a color value. The color value can either be a string with a hex color code, or a number from 1-3 (theme-affected colors).
+- `branches`：**可选**。一个包含层/节点 id 的数组。在树上，会从该节点到列表中的所有节点显示一条连线。另外，数组中的条目也可以是一个二元数组，包含 id 和一个颜色值。颜色值可以是一个十六进制颜色代码字符串，或者一个 1-3 的数字（受主题影响的颜色）。
 
-- nodeStyle: **optional**. A CSS object, where the keys are CSS attributes, which styles this node on the tree.
+- `nodeStyle`：**可选**。一个 CSS 对象，其中键是 CSS 属性，用于样式化该节点在树上的外观。
 
-- tooltip() / tooltipLocked(): **optional**. Functions that return text, which is the tooltip for the node when the layer is unlocked or locked, respectively. By default the tooltips behave the same as in the original Prestige Tree.
+- `tooltip()` / `tooltipLocked()`：**可选**。返回文本的函数，分别表示节点解锁或锁定时显示的提示框。默认情况下提示框的行为与原始 Prestige Tree 相同。
 
-- row: **optional**, the row that this node appears in (for the default tree).
+- `row`：**可选**，该节点在默认树中出现的行。
 
-- position: **optional**, Determines the horizontal position of the layer in its row in a default tree. By default, it uses the id,
-and layers/nodes are sorted in alphabetical order.
+- `position`：**可选**，决定在默认树中该层在其行内的水平位置。默认情况下，它使用 id，层/节点按字母顺序排序。

@@ -1,32 +1,32 @@
-# Infoboxes
+# 信息框
 
-Infoboxes are good for displaying "lore", or story elements, as well as for explaining complicated things.
+信息框适合用于显示“背景故事”或剧情元素，以及解释复杂的内容。
 
-In the default tab layout, the first infobox will be displayed at the very top of the tab.
+在默认的标签页布局中，第一个信息框将显示在标签页的最顶部。
 
-Infoboxes are defined like other Big Features:
+信息框像其他大型功能一样定义：
 
 ```js
 infoboxes: {
     lore: {
-        title: "foo",
-        body() { return "bar" },
-        etc
+        title: "标题",
+        body() { return "正文" },
+        // 其他特性
     },
-    etc
+    // 等等
 }
 ```
 
-Features:
+特性：
 
-- title: The text displayed above the main box. Can be a function to be dynamic, and can use basic HTML.
+- `title`：显示在主框上方的文本。可以是动态函数，可以使用基础 HTML。
 
-- body: The text displayed inside the box. Can be a function to be dynamic, and can use basic HTML.
+- `body`：显示在框内的文本。可以是动态函数，可以使用基础 HTML。
 
-- style, titleStyle, bodyStyle: **optional**. Apply CSS to the infobox, or to the title button or body of the infobox, in the form of an object where the keys are CSS attributes, and the values are the values for those attributes (both as strings).
+- `style`、`titleStyle`、`bodyStyle`：**可选**。分别对信息框整体、标题按钮或信息框正文应用 CSS 样式。形式为一个对象，其中键是 CSS 属性，值是对应的属性值（均为字符串）。
 
-- unlocked(): **optional**. A function returning a bool to determine if the infobox is visible or not. Default is unlocked.
+- `unlocked()`：**可选**。返回布尔值的函数，决定信息框是否可见。默认为解锁（可见）。
 
-- layer: **assigned automagically**. It's the same value as the name of this layer, so you can do `player[this.layer].points` or similar
+- `layer`：**自动分配**。它的值与该层的名称相同，因此你可以使用 `player[this.layer].points` 之类的写法。
 
-- id: **assigned automagically**. It's the "key" which the bar was stored under, for convenient access. The infobox in the example's id is "lore".
+- `id`：**自动分配**。它是信息框存储时所用的“键”，方便访问。示例中信息框的 id 是 `"lore"`。

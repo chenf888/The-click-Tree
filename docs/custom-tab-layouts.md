@@ -1,8 +1,8 @@
-# Custom tab layouts
+# 自定义标签页布局
 
-Note: If you are using subtabs, `tabFormat` is used differently, but the same format is used for defining their layouts. [See here for more on subtabs](subtabs-and-microtabs.md).
+注意：如果你使用了子标签页（subtabs），`tabFormat` 的用法会有所不同，但定义其布局的格式是一样的。[关于子标签页的更多信息请参见此处](subtabs-and-microtabs.md)。
 
-Custom tab layouts can be used to do basically anything in a tab window, especially combined with the "style" layer feature. The `tabFormat` feature is an array of things, like this:
+自定义标签页布局可以让你在标签页窗口中实现几乎任何内容，尤其是与层的 `style` 特性结合使用时。`tabFormat` 特性是一个数组，包含如下内容：
 
 ```js
 tabFormat: [
@@ -10,7 +10,7 @@ tabFormat: [
     ["prestige-button"],
     "blank",
     ["display-text",
-        function() { return 'I have ' + format(player.points) + ' pointy points!' },
+        function() { return '我有 ' + format(player.points) + ' 个尖尖的点数！' },
         { "color": "red", "font-size": "32px", "font-family": "Comic Sans MS" }],
     "blank",
     ["toggle", ["c", "beep"]],
@@ -21,65 +21,58 @@ tabFormat: [
 ]
 ```
 
-It is a list of components, which can be either just a name, or an array with arguments. If it's an array, the first item is the name of the component, the second is the data passed into it, and the third (optional) applies a CSS style to it with a "CSS object", where the keys are CSS attributes.
+这是一个组件列表，每个组件可以只是一个名称，或者是一个带参数的数组。如果是数组，第一个元素是组件的名称，第二个是传递给组件的数据，第三个（可选）是一个“CSS 对象”，用于对该组件应用 CSS 样式，其中键是 CSS 属性。
 
-These are the existing components, but you can create more in [components.js](/js/components.js):
+以下是现有的组件，你也可以在 [components.js](/js/components.js) 中创建更多组件：
 
-- display-text: Displays some text (can use basic HTML). The argument is the text to display. It can also be a function that returns updating text.
+- `display-text`：显示一些文本（可以使用基础 HTML）。参数是要显示的文本。也可以是一个返回动态文本的函数。
 
-- display-image: Displays an image. The argument is the url of the image.
+- `display-image`：显示一张图片。参数是图片的 URL。
 
-- h-line, v-line: Display a horizontal or vertical divider line, respectively.
+- `h-line`、`v-line`：分别显示一条水平或垂直的分隔线。
 
-- raw-html: Displays some basic HTML, can also be a function.
+- `raw-html`：显示一些基础 HTML，也可以是一个函数。
 
-- blank: Adds empty space. The default dimensions are 8px x 17px. The argument changes the dimensions. If it's a single value (e.g. "20px"), that determines the height. If you have a pair of arguments, the first is width and the second is height.
+- `blank`：添加空白空间。默认尺寸为 8px × 17px。参数可以改变尺寸。如果是一个单独的值（例如 `"20px"`），则决定高度。如果提供两个参数，第一个是宽度，第二个是高度。
 
-- row: Display a list of components horizontally. The argument is an array of components in the tab layout format.
+- `row`：水平显示一组组件。参数是一个数组，数组中的元素是标签页布局格式的组件。
 
-- column: Display a list of components vertically. The argument is an array of components in the tab layout format. This is useful to display columns within a row.
+- `column`：垂直显示一组组件。参数是一个数组，数组中的元素是标签页布局格式的组件。这在一行内需要显示多列时非常有用。
 
-- main-display: The text that displays the main currency for the layer and its effects. The argument is the amount of precision to use, allowing it to display non-whole numbers.
+- `main-display`：显示该层主要货币及其效果的文本。参数是精度（小数位数），允许显示非整数。
 
-- resource-display: The text that displays the currency that this layer is based on, as well as the best and/or total values for this layer's prestige currency (if they are put in `startData` for this layer).
+- `resource-display`：显示该层所基于的货币，以及该层 prestige 货币的最佳值和/或总值（如果这些值已放入该层的 `startData` 中）。
 
-- prestige-button: The button to reset for a currency in this layer.
+- `prestige-button`：用于重置该层货币的按钮。
 
-- text-input: A text input box. The argument is the name of the variable in player[layer] that the input is for, player[layer][argument]
-    (Works with strings, numbers, and Decimals!)
+- `text-input`：一个文本输入框。参数是 `player[layer]` 中该输入框所对应的变量名，即 `player[layer][argument]`（适用于字符串、数字和 `Decimal`！）
 
-- slider: Lets the user input a value with a slider. The argument a 3-element array: [name, min, max].
-    The name is the name of the variable in player[layer] that the input  is for, and min and max are the limits of the slider.
-    (Does not work for Decimal values)
+- `slider`：让用户通过滑块输入一个值。参数是一个三元数组：`[名称, 最小值, 最大值]`。名称是 `player[layer]` 中该输入框所对应的变量名，最小值和最大值是滑块的限制。（不适用于 `Decimal` 值）
 
-- drop-down: Lets the user input a value with a dropdown menu. The argument a 2-element array: [name, options].
-    The name is the name of the variable in player[layer] that the input is for, and options is an array of strings for options you can use.
+- `drop-down`：让用户通过下拉菜单输入一个值。参数是一个二元数组：`[名称, 选项数组]`。名称是 `player[layer]` 中该输入框所对应的变量名，选项数组是一个字符串数组，表示可用的选项。
 
-- upgrades, milestones, challenges, achievements, buyables, clickables: Displays the layers upgrades/challenges/etc, as appropriate. The argument is optional, and is a the list of rows this component should include, if it doesn't have all of them.
+- `upgrades`、`milestones`、`challenges`、`achievements`、`buyables`、`clickables`：分别显示该层的升级/里程碑/挑战/成就/可购买项/可点击项。参数是可选的，如果不想包含所有行，可以指定该组件应包含哪些行的列表。
 
-- microtabs: Display a set of subtabs for an area. The argument is the name of the set of microtabs in the "microtabs" feature.
+- `microtabs`：为一个区域显示一组子标签页。参数是 `microtabs` 特性中定义的微标签页集合的名称。
 
-- bar: Display a bar. The argument is the id of the bar to display.
+- `bar`：显示一个进度条。参数是要显示的进度条的 id。
 
-- infobox: Display an infobox. The argument is the id of the infobox to display.
+- `infobox`：显示一个信息框。参数是要显示的信息框的 id。
 
-- tree: Displays a tree. The argument is an array of arrays containing the names of the nodes in the tree (first by row, then by column)
-    [See here for more information on tree layouts and nodes!](trees-and-tree-customization.md)
+- `tree`：显示一个树。参数是一个数组的数组，包含树中节点的名称（先按行，再按列）。[关于树布局和节点的更多信息请参见此处！](trees-and-tree-customization.md)
 
-- upgrade-tree, buyable-tree, clickable-tree: Displays a tree of upgrades/buyables/clickables from this layer. The argument is an array of arrays containing the ids of the upgrade/etc in the tree (first by row, then by column). A tree can only have one type of component in it.
+- `upgrade-tree`、`buyable-tree`、`clickable-tree`：显示本层中升级/可购买项/可点击项的树形结构。参数是一个数组的数组，包含树中升级等的 id（先按行，再按列）。一棵树中只能包含一种类型的组件。
 
-- toggle: A toggle button that toggles a bool value. The argument is a pair that identifies the location in player of the bool to toggle, e.g. `[layer, id]`. 'layer' also affects the color of the toggle.
+- `toggle`：一个切换按钮，用于切换一个布尔值。参数是一个二元组，用于标识要切换的布尔值在 `player` 中的位置，例如 `[layer, id]`。`layer` 也会影响切换按钮的颜色。
 
-- grid: Displays the gridable grid for the layer. If you need more than one grid, use a layer proxy. The argument is optional, and is a the list of rows this component should include, if it doesn't have all of them.
+- `grid`：显示该层的网格（gridable）。如果你需要多个网格，可以使用层代理（layer proxy）。参数是可选的，如果不想包含所有行，可以指定该组件应包含哪些行的列表。
 
-- layer-proxy: Lets you use components from another layer. The argument is a pair, `[layer, data]`, consisting of the id of the layer to proxy from, and the tabFormat for the components to show.
-    (Note: you cannot use a microtab within a layer proxy)
+- `layer-proxy`：让你可以使用另一层的组件。参数是一个二元组 `[layer, data]`，包含要代理的层的 id，以及要显示的组件的 `tabFormat`。（注意：你不能在层代理内部使用微标签页）
 
+其余组件是子组件。它们可以像其他组件一样使用，但通常作为其他组件的一部分出现。
 
-The rest of the components are sub-components. They can be used just like other components, but are typically part of another component.
+- `upgrade`、`milestone`、`challenge`、`buyable`、`clickable`、`achievement`、`gridable`：单个升级、挑战等。参数是 id。例如，当你希望将升级拆分到多个子标签页中时，可以使用这种方式。
 
-- upgrade, milestone, challenge, buyable, clickable, achievement, gridable: An individual upgrade, challenge, etc. The argument is the id. This can be used if you want to have upgrades split up across multiple subtabs, for example.
+- `respec-button`、`master-button`：分别对应可购买项和可点击项的重置按钮和主按钮。
 
-- respec-button, master-button: The respec and master buttons for buyables and clickables, respectively.
-
-- sell-one, sell-all: The "sell one" and "sell all" for buyables, respectively. The argument is the id of the buyable.
+- `sell-one`、`sell-all`：分别对应可购买项的“出售一个”和“出售全部”按钮。参数是可购买项的 id。
