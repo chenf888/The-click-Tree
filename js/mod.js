@@ -11,11 +11,14 @@ let modInfo = {
 }
 
 let VERSION = {
-	num: "0.2",
+	num: "0.21",
 	name: "CLICK",
 }
 
 let changelog = `<h1>更新日志：</h1><br>
+    <h3>v0.21</h3><br>
+        新增100种主题样式和全局炫彩模式（你喜欢彩虹吗？）<br>
+		<span style="color: #888; font-size: 12px;">如果你也想为你的tree添加炫彩模式，可以参考<a href="css/rainbow.css" target="_blank" style="color: #888;">rainbow.css</a>文件，或者直接使用它！点击文件名快速跳转。</span><br>
     <h3>v0.2</h3><br>
 		添加了3个层，大大加强了点击墙，哈哈哈<br>
 		游戏体验史诗级降低<br>

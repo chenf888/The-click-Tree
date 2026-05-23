@@ -208,6 +208,7 @@ function load() {
 	versionCheck();
 	changeTheme();
 	changeTreeQuality();
+	if (options.rainbowMode) document.body.classList.add("rainbow-mode");
 	updateLayers();
 	setupModInfo();
 
@@ -273,10 +274,10 @@ function exportSave() {
 }
 function importSave(imported = undefined, forced = false) {
 	if (imported === undefined)
-		imported = prompt("Paste your save here");
+		imported = prompt("请粘贴你的存档");
 	try {
 		tempPlr = Object.assign(getStartPlayer(), JSON.parse(atob(imported)));
-		if (tempPlr.versionType != getModID() && !forced && !confirm("This save appears to be for a different mod! Are you sure you want to import?")) // Wrong save (use "Forced" to force it to accept.)
+		if (tempPlr.versionType != getModID() && !forced && !confirm("此存档似乎是其他 mod 的！确定要导入吗？")) // Wrong save (use "Forced" to force it to accept.)
 			return;
 		player = tempPlr;
 		player.versionType = getModID();

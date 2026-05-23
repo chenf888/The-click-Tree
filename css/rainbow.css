@@ -1,0 +1,418 @@
+/* 全局炫彩 by陈风就是浪 */
+
+@keyframes rainbow-bg {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes rainbow-border {
+    0%   { border-color: #ff0000; }
+    14%  { border-color: #ff8800; }
+    28%  { border-color: #ffff00; }
+    42%  { border-color: #00ff00; }
+    57%  { border-color: #0088ff; }
+    71%  { border-color: #4400ff; }
+    85%  { border-color: #8800ff; }
+    100% { border-color: #ff0000; }
+}
+
+@keyframes rainbow-text {
+    0%   { color: #ff0000; }
+    14%  { color: #ff8800; }
+    28%  { color: #ffff00; }
+    42%  { color: #00ff00; }
+    57%  { color: #00ccff; }
+    71%  { color: #4444ff; }
+    85%  { color: #cc44ff; }
+    100% { color: #ff0000; }
+}
+
+@keyframes rainbow-glow {
+    0%   { box-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000, 0 0 45px #ff0000; }
+    14%  { box-shadow: 0 0 15px #ff8800, 0 0 30px #ff8800, 0 0 45px #ff8800; }
+    28%  { box-shadow: 0 0 15px #ffff00, 0 0 30px #ffff00, 0 0 45px #ffff00; }
+    42%  { box-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00, 0 0 45px #00ff00; }
+    57%  { box-shadow: 0 0 15px #00ccff, 0 0 30px #00ccff, 0 0 45px #00ccff; }
+    71%  { box-shadow: 0 0 15px #6666ff, 0 0 30px #6666ff, 0 0 45px #6666ff; }
+    85%  { box-shadow: 0 0 15px #cc44ff, 0 0 30px #cc44ff, 0 0 45px #cc44ff; }
+    100% { box-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000, 0 0 45px #ff0000; }
+}
+
+@keyframes rainbow-shadow-inset {
+    0%   { box-shadow: inset 0 0 20px #ff0000, 0 0 10px #ff0000; }
+    16%  { box-shadow: inset 0 0 20px #ff8800, 0 0 10px #ff8800; }
+    33%  { box-shadow: inset 0 0 20px #ffff00, 0 0 10px #ffff00; }
+    50%  { box-shadow: inset 0 0 20px #00ff00, 0 0 10px #00ff00; }
+    66%  { box-shadow: inset 0 0 20px #0088ff, 0 0 10px #0088ff; }
+    83%  { box-shadow: inset 0 0 20px #cc44ff, 0 0 10px #cc44ff; }
+    100% { box-shadow: inset 0 0 20px #ff0000, 0 0 10px #ff0000; }
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+    50%      { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+@keyframes pulse-rainbow {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.08); }
+}
+
+@keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+
+@keyframes float-up {
+    0%   { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-80px) scale(0); opacity: 0; }
+}
+
+@keyframes rotate-rainbow {
+    0%   { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25%      { transform: rotate(-2deg); }
+    75%      { transform: rotate(2deg); }
+}
+
+@keyframes neon-flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+    20%, 24%, 55%                         { opacity: 0.5; }
+}
+
+
+body.rainbow-mode {
+    background: linear-gradient(
+        135deg,
+        #1a0028, #001a3a, #002a10, #2a1a00, #28001a
+    );
+    background-size: 400% 400%;
+    animation: rainbow-bg 8s ease infinite;
+}
+
+body.rainbow-mode #points,
+body.rainbow-mode h2,
+body.rainbow-mode .overlayThing h2 {
+    animation: rainbow-text 3s linear infinite, neon-flicker 5s ease-in-out infinite;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+body.rainbow-mode h2 {
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+}
+
+body.rainbow-mode .opt {
+    background: linear-gradient(
+        45deg,
+        #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #4400ff, #8800ff
+    );
+    background-size: 300% 300%;
+    animation: rainbow-bg 4s ease infinite;
+    color: #ffffff !important;
+    font-weight: 900;
+    text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5);
+    border: 2px solid transparent;
+    border-image: linear-gradient(45deg, red, orange, yellow, lime, cyan, blue, violet) 1;
+    transition: all 0.3s ease;
+}
+
+body.rainbow-mode .opt:hover {
+    animation: rainbow-bg 1.5s ease infinite, pulse-rainbow 0.6s ease-in-out infinite;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 0 0 60px rgba(255, 100, 100, 0.4);
+    transform: scale(1.12);
+}
+
+body.rainbow-mode .rainbow-btn {
+    background: conic-gradient(
+        red, orange, yellow, lime, cyan, blue, violet, red
+    ) !important;
+    background-size: 200% 200% !important;
+    animation: rainbow-bg 2s linear infinite, pulse-rainbow 1s ease-in-out infinite !important;
+    font-size: 16px !important;
+    text-shadow: 0 0 15px #fff, 0 0 30px #fff, 0 0 50px #ff0 !important;
+    box-shadow: 0 0 40px rgba(255, 255, 0, 0.6) !important;
+}
+
+body.rainbow-mode .upg {
+    border-width: 3px !important;
+    animation: rainbow-border 4s linear infinite, rainbow-shadow-inset 4s linear infinite;
+    transition: all 0.4s ease;
+}
+
+body.rainbow-mode .upg.can:hover {
+    animation: rainbow-border 1s linear infinite, pulse-rainbow 0.5s ease-in-out infinite;
+    filter: brightness(1.3);
+}
+
+body.rainbow-mode .upg.bought {
+    border-width: 3px !important;
+    animation: rainbow-glow 3s linear infinite;
+    filter: brightness(1.1) saturate(1.3);
+}
+
+body.rainbow-mode .upg.locked {
+    animation: none;
+    filter: grayscale(0.5) brightness(0.7);
+}
+
+body.rainbow-mode .milestone {
+    border-width: 3px !important;
+    animation: rainbow-border 4s linear infinite;
+    transition: all 0.4s ease;
+}
+
+body.rainbow-mode .milestone:hover {
+    animation: rainbow-border 1.5s linear infinite, pulse-rainbow 0.6s ease-in-out infinite;
+}
+
+body.rainbow-mode .milestoneDone {
+    border-width: 3px !important;
+    animation: rainbow-glow 3s linear infinite;
+    background: linear-gradient(135deg, #55aa44, #77bf5f, #44aa55) !important;
+    background-size: 200% 200% !important;
+    animation: rainbow-bg 4s ease infinite, rainbow-glow 3s linear infinite;
+}
+
+body.rainbow-mode .achievement {
+    border-width: 3px !important;
+    animation: rainbow-border 4s linear infinite;
+}
+
+body.rainbow-mode .achievement.bought {
+    animation: rainbow-glow 2.5s linear infinite;
+    filter: brightness(1.2) saturate(1.4);
+}
+
+body.rainbow-mode .achievement.can:hover {
+    animation: rainbow-border 1s linear infinite, pulse-rainbow 0.5s ease-in-out infinite;
+}
+
+body.rainbow-mode .buyable {
+    border-width: 3px !important;
+    animation: rainbow-border 4s linear infinite;
+    transition: all 0.4s ease;
+}
+
+body.rainbow-mode .buyable.can:hover {
+    animation: rainbow-border 1s linear infinite, pulse-rainbow 0.5s ease-in-out infinite;
+}
+
+body.rainbow-mode .challenge {
+    border-width: 3px !important;
+    animation: rainbow-border 5s linear infinite;
+    transition: all 0.4s ease;
+}
+
+body.rainbow-mode .challenge.canComplete {
+    animation: rainbow-glow 1.5s linear infinite, neon-flicker 2s ease-in-out infinite;
+}
+
+body.rainbow-mode .challenge.done {
+    animation: rainbow-glow 3s linear infinite;
+    filter: brightness(1.2);
+}
+
+body.rainbow-mode .challenge.can:hover {
+    animation: rainbow-border 1.2s linear infinite, pulse-rainbow 0.5s ease-in-out infinite;
+}
+
+body.rainbow-mode .treeNode {
+    border-width: 3px !important;
+    animation: rainbow-border 4s linear infinite, rainbow-shadow-inset 4s linear infinite;
+}
+
+body.rainbow-mode .treeNode.can:hover {
+    animation: rainbow-border 1s linear infinite, pulse-rainbow 0.5s ease-in-out infinite;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), 0 0 60px rgba(255, 150, 0, 0.4) !important;
+}
+
+body.rainbow-mode .treeButton {
+    border-width: 3px !important;
+    animation: rainbow-border 4s linear infinite, rainbow-shadow-inset 4s linear infinite;
+}
+
+body.rainbow-mode .treeButton.can:hover {
+    animation: rainbow-border 1s linear infinite, pulse-rainbow 0.5s ease-in-out infinite;
+}
+
+body.rainbow-mode .tabButton {
+    border-width: 3px !important;
+    animation: rainbow-border 4s linear infinite;
+    transition: all 0.3s ease;
+}
+
+body.rainbow-mode .tabButton:hover {
+    animation: rainbow-border 1s linear infinite, pulse-rainbow 0.5s ease-in-out infinite;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+}
+
+body.rainbow-mode .reset {
+    border-width: 4px !important;
+    animation: rainbow-border 3s linear infinite, rainbow-glow 3s linear infinite;
+    transition: all 0.4s ease;
+}
+
+body.rainbow-mode .reset:hover {
+    animation: rainbow-border 0.8s linear infinite, pulse-rainbow 0.4s ease-in-out infinite;
+    filter: brightness(1.4);
+}
+
+body.rainbow-mode .longUpg {
+    border-width: 3px !important;
+    animation: rainbow-border 3s linear infinite;
+    background: linear-gradient(45deg, #222, #333, #222);
+    background-size: 200% 200%;
+    animation: rainbow-bg 4s ease infinite, rainbow-border 3s linear infinite;
+    color: #fff !important;
+    text-shadow: 0 0 10px rgba(255,255,255,0.6);
+}
+
+body.rainbow-mode .longUpg.can:hover {
+    filter: brightness(1.5);
+    box-shadow: 0 0 30px rgba(255,255,255,0.5);
+}
+
+body.rainbow-mode .fill {
+    background: linear-gradient(
+        90deg,
+        #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #4400ff, #8800ff
+    ) !important;
+    background-size: 200% 100% !important;
+    animation: rainbow-bg 3s linear infinite !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+body.rainbow-mode .barBorder {
+    border-width: 3px !important;
+    animation: rainbow-border 4s linear infinite;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+}
+
+body.rainbow-mode .story {
+    border-width: 3px !important;
+    animation: rainbow-border 5s linear infinite;
+}
+
+body.rainbow-mode .popup {
+    border-width: 4px !important;
+    animation: rainbow-border 3s linear infinite;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.3), 0 0 60px rgba(255, 150, 0, 0.2);
+}
+
+body.rainbow-mode .vl {
+    border-left: 6px solid;
+    animation: rainbow-border 4s linear infinite;
+}
+
+body.rainbow-mode .hl {
+    border-top: 3px solid;
+    animation: rainbow-border 4s linear infinite;
+}
+
+body.rainbow-mode .other-back {
+    animation: rainbow-text 3s linear infinite;
+    text-shadow: 0 0 15px currentColor;
+}
+
+body.rainbow-mode #optionWheel:hover {
+    animation: rotate-rainbow 0.5s linear infinite;
+    filter: hue-rotate(0deg);
+}
+
+body.rainbow-mode #optionWheel {
+    filter: hue-rotate(0deg);
+    animation: rotate-rainbow 8s linear infinite;
+}
+
+body.rainbow-mode #info {
+    animation: rainbow-text 3s linear infinite;
+    text-shadow: 5px 0 10px currentColor, -3px 0 12px currentColor !important;
+    -webkit-text-stroke-color: currentColor !important;
+}
+
+body.rainbow-mode #version {
+    animation: rainbow-text 4s linear infinite;
+    text-shadow: 0 0 10px currentColor;
+}
+
+body.rainbow-mode .link {
+    animation: rainbow-text 4s linear infinite;
+    text-shadow: 0 0 8px currentColor;
+}
+
+body.rainbow-mode .tooltip {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(255, 150, 0, 0.2);
+    border: 2px solid;
+    animation: rainbow-border 3s linear infinite;
+}
+
+body.rainbow-mode #loadingSection h1 {
+    animation: rainbow-text 2s linear infinite;
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+}
+
+body.rainbow-mode .overlayThing {
+    transition: all 0.3s ease;
+}
+
+body.rainbow-mode .overlayThing h3 {
+    animation: rainbow-text 5s linear infinite;
+}
+
+body.rainbow-mode .can:hover {
+    filter: brightness(1.25) saturate(1.3);
+    transition: all 0.25s ease;
+}
+
+body.rainbow-mode .particle {
+    filter: hue-rotate(0deg);
+    animation: rotate-rainbow 3s linear infinite;
+}
+
+body.rainbow-mode #treeCanvas {
+    filter: hue-rotate(0deg);
+    animation: rotate-rainbow 30s linear infinite;
+}
+
+body.rainbow-mode .fullWidth h2 {
+    animation: rainbow-text 2s linear infinite, neon-flicker 3s ease-in-out infinite;
+    text-shadow: 0 0 25px currentColor, 0 0 50px currentColor;
+}
+
+body.rainbow-mode .fullWidth h3 {
+    animation: rainbow-text 4s linear infinite;
+    text-shadow: 0 0 10px currentColor;
+}
+
+body.rainbow-mode span.overlayThing {
+    transition: color 0.5s ease;
+}
+
+body.rainbow-mode .star {
+    animation: rainbow-text 2s linear infinite, pulse-rainbow 1s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+body.rainbow-mode .mark {
+    animation: pulse-rainbow 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+}
+
+body.rainbow-mode::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, red, orange, yellow, lime, cyan, blue, violet) !important;
+    border-radius: 10px;
+}
+
+body.rainbow-mode::-webkit-scrollbar {
+    width: 10px;
+}
+
+body.rainbow-mode::-webkit-scrollbar-track {
+    background: #111;
+}

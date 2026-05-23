@@ -15,6 +15,7 @@ function getStartOptions() {
 		oldStyle: false,
 		forceTooltips: true,
 		hideMilestonePopups: false,
+		rainbowMode: false,
 	}
 }
 
@@ -42,12 +43,20 @@ function changeTreeQuality() {
 	document.body.style.setProperty('--hqProperty2b', on ? "0px 0px 20px var(--background)" : "");
 	document.body.style.setProperty('--hqProperty3', on ? "2px 2px 4px rgba(0, 0, 0, 0.25)" : "none");
 }
+function toggleRainbow() {
+	options.rainbowMode = !options.rainbowMode;
+	if (options.rainbowMode) {
+		document.body.classList.add("rainbow-mode");
+	} else {
+		document.body.classList.remove("rainbow-mode");
+	}
+}
 function toggleAuto(toggle) {
 	Vue.set(player[toggle[0]], [toggle[1]], !player[toggle[0]][toggle[1]]);
 	needCanvasUpdate=true
 }
 
-const MS_DISPLAYS = ["ALL", "LAST, AUTO, INCOMPLETE", "AUTOMATION, INCOMPLETE", "INCOMPLETE", "NONE"];
+const MS_DISPLAYS = ["全部", "最后, 自动, 未完成", "自动化, 未完成", "未完成", "无"];
 
 const MS_SETTINGS = ["always", "last", "automation", "incomplete", "never"];
 
@@ -78,4 +87,4 @@ function milestoneShown(layer, id) {
 	return false;
 }
 
-let formatOption = (opt) => opt ? 'ON' : 'OFF'
+let formatOption = (opt) => opt ? '开' : '关'
