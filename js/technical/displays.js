@@ -42,7 +42,7 @@ function achievementStyle(layer, id){
     if (ach.image){ 
         style.push({'background-image': 'url("' + ach.image + '")'})
     } 
-    if (!hasAchievement(layer, id)) style.push({'visibility': 'hidden'})
+    // 所有成就始终可见，locked/bought 由 CSS class 控制颜色
     style.push(ach.style)
     return style
 }

@@ -11,19 +11,21 @@ let modInfo = {
 }
 
 let VERSION = {
-	num: "0.12",
+	num: "0.2",
 	name: "CLICK",
 }
 
 let changelog = `<h1>更新日志：</h1><br>
+    <h3>v0.2</h3><br>
+		添加了3个层，大大加强了点击墙，哈哈哈<br>
+		游戏体验史诗级降低<br>
+		zako zako艾斯贼<br>
     <h3>v0.12</h3><br>
-		- 修复了一些BUG<br>
+		修复了一些BUG<br>
     <h3>v0.11</h3><br>
-		- 添加了新的点击升级和里程碑以及很多BUG<br>
+		添加了c2层和新的点击升级和里程碑以及很多BUG<br>
 	<h3>v0.1</h3><br>
-		- 新增层 "click 1"，可点击按钮获得点击分数。<br>
-		- 4 个点击升级,3 个里程碑。<br>
-		- 增加 4 个成就。<br>`
+		新增 "click 1" 层<br>`
 
 let winText = `恭喜！你已经到达终点并通关了这个游戏，但是……`
 

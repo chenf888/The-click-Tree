@@ -49,6 +49,8 @@ function getPointGen() {
 function addedPlayerData() { return {
 	weather: "是",
 	happiness: new Decimal(72),
+	clickCombo: 0,
+	lastClickTime: 0,
 }}
 
 // 在页面顶部显示额外的东西
