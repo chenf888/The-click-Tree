@@ -11,11 +11,15 @@ let modInfo = {
 }
 
 let VERSION = {
-	num: "0.21",
-	name: "CLICK",
+	num: "0.3",
+	name: "DEEP CLICK",
 }
 
 let changelog = `<h1>更新日志：</h1><br>
+    <h3>v0.3</h3><br>
+		添加了更多的无意义内容，现在的点击墙已经变得超级大<br>
+		你最少需要点击1500亿下才能抵达残局<br>
+		你害怕了吗？<br>
     <h3>v0.21</h3><br>
 	    为全局提供了中文翻译<br>
         新增100种主题样式和全局炫彩模式（你喜欢彩虹吗？）<br>
