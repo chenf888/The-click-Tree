@@ -401,6 +401,7 @@ addLayer("c2", {
     tabFormat: [
         "main-display",
         "prestige-button",
+        ["display-text", () => `当前点击分数：${format(player.c1.points)}`],
         ["display-text", () => {
             let rawPow = player.c2.points;
             let softcapStart = new Decimal(10);
@@ -591,6 +592,8 @@ addLayer("c3", {
             return `瞄准要害：暴击率 ${(cc*100).toFixed(1)}% | 暴击倍率 ×${format(cm)}${scNote}`;
         }],
         "blank",
+        ["display-text", () => `当前点击分数：${format(player.c1.points)}`],
+        "blank",
         "clickables",
         "blank",
         "upgrades",
@@ -752,6 +755,8 @@ addLayer("c4", {
             let comboVal = combo > 0 ? format(new Decimal(1).add(new Decimal(Math.log2(combo + 1)).times(comboBase))) : "×1";
             return `连击 ${combo} 层 | 倍率 ${comboVal} | 窗口 ${comboWindow.toFixed(1)}秒`;
         }],
+        "blank",
+        ["display-text", () => `当前点击分数：${format(player.c1.points)}`],
         "blank",
         "clickables",
         "blank",
@@ -926,6 +931,8 @@ addLayer("c5", {
             let transPow = hasUpgrade("c5", 12) ? 1.05 : 1.03;
             return `超越凡尘：全局点击 ×${format(Decimal.pow(transPow, player.c5.points))}`;
         }],
+        "blank",
+        ["display-text", () => `当前点击分数：${format(player.c1.points)}`],
         "blank",
         "clickables",
         "blank",
