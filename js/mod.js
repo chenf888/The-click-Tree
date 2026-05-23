@@ -11,11 +11,13 @@ let modInfo = {
 }
 
 let VERSION = {
-	num: "0.11",
+	num: "0.12",
 	name: "CLICK",
 }
 
 let changelog = `<h1>更新日志：</h1><br>
+    <h3>v0.12</h3><br>
+		- 修复了一些BUG<br>
     <h3>v0.11</h3><br>
 		- 添加了新的点击升级和里程碑以及很多BUG<br>
 	<h3>v0.1</h3><br>

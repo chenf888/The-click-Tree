@@ -106,18 +106,18 @@ addLayer("c1", {
         },
         14: {
             title: "点击 4",
-            description: "未来每次点击 ×1.5",
+            description: "未来每次点击 ×2",
             cost: new Decimal(1000),
-            effect() { return new Decimal(1.5); },
+            effect() { return new Decimal(2); },
             effectDisplay() { return "×" + format(upgradeEffect(this.layer, this.id)); },
             unlocked() { return hasMilestone("c1", 0); }
         },
         15: {
             title: "点击 5",
-            description: "基础点击收益 +20",
+            description: "基础点击收益 +10",
             cost: new Decimal(5000),
-            effect() { return new Decimal(20); },
-            unlocked() { return hasMilestone("c1", 1); }
+            effect() { return new Decimal(10); },
+            unlocked() { return hasMilestone("c1", 0); }
         },
         16: {
             title: "点击 6",
@@ -146,7 +146,7 @@ addLayer("c1", {
 
     challenges: {
         11: {
-            name: "极速点击",
+            name: "点快点",
             challengeDescription: "点击收益变为原本的 10%。",
             goalDescription: "在挑战内获得 500 点击分数（30秒内）",
             rewardDescription: "点击收益 ×1.1（永久）",
@@ -206,12 +206,41 @@ addLayer("c1", {
                 player.c1.activeChallenge = null;
             }
         }
+    },
+
+    doReset(resettingLayer) {
+        // 当 c2 层 prestige 时，对 c1 执行软重置并自动购买升级
+        if (resettingLayer === "c2") {
+            let savedMilestones = player.c1.milestones;
+            let savedChallenges = player.c1.challenges;
+
+            layerDataReset("c1");
+
+            player.c1.milestones = savedMilestones;
+            player.c1.challenges = savedChallenges;
+            player.c1.challenge11Start = new Decimal(0);
+            player.c1.challenge11StartTime = 0;
+            player.c1.challenge12Start = new Decimal(0);
+
+            // 根据 c2 里程碑自动购买 c1 升级
+            player.c1.upgrades = [];
+            let autoIds = [];
+            if (hasMilestone("c2", 2)) autoIds = [11,12,13,14,15,16,17,18];
+            else if (hasMilestone("c2", 1)) autoIds = [11,12,13,14,15];
+            else if (hasMilestone("c2", 0)) autoIds = [11,12,13];
+
+            autoIds.forEach(id => {
+                if (!player.c1.upgrades.includes(id)) {
+                    player.c1.upgrades.push(id);
+                }
+            });
+        }
     }
 });
 
 addLayer("c2", {
     name: "力量",
-    symbol: "P",
+    symbol: "c2",
     position: 1,
     row: 1,
     color: "#FFA500",
@@ -294,32 +323,9 @@ milestones: {
     }
 },
 
- doReset(resettingLayer) {
-    if (resettingLayer === "c2") {
-        let savedPoints = player.points;
-        let savedMilestones = player.c1.milestones;
-        let savedChallenges = player.c1.challenges;
-
-        layerDataReset("c1");
-
-        player.c1.milestones = savedMilestones;
-        player.c1.challenges = savedChallenges;
-        player.c1.challenge11Start = new Decimal(0);
-        player.c1.challenge11StartTime = 0;
-        player.c1.challenge12Start = new Decimal(0);
-        player.points = savedPoints;
-
-        let autoIds = [];
-        if (hasMilestone("c2", 2)) autoIds = [11,12,13,14,15,16,17,18];
-        else if (hasMilestone("c2", 1)) autoIds = [11,12,13,14,15];
-        else if (hasMilestone("c2", 0)) autoIds = [11,12,13];
-
-        autoIds.forEach(id => {
-            if (!player.c1.upgrades.includes(id)) {
-                player.c1.upgrades.push(id);
-            }
-        });
-    }
+doReset(resettingLayer) {
+    // c1.doReset 已处理软重置和自动购买升级的逻辑
+    // 此处无需额外操作
 }
 });
 
