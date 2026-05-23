@@ -312,6 +312,7 @@ addLayer("c1", {
     },
 
     update(diff) {
+        player._lastClickCount = player.points;
         if (inChallenge("c1", 11)) {
             let elapsed = (Date.now() - player.c1.challenge11StartTime) / 1000;
             if (elapsed > 30) {
@@ -356,8 +357,10 @@ addLayer("c1", {
 
             if (savedClickCount !== undefined) {
                 player.points = savedClickCount;
-                player._savedClickCount = undefined;
+            } else if (player._lastClickCount !== undefined) {
+                player.points = player._lastClickCount;
             }
+            player._savedClickCount = undefined;
         }
     }
 });
