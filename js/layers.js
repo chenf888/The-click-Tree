@@ -1598,6 +1598,7 @@ addLayer("a", {
     row: "side",
     color: "#FFD700",
     resource: "成就点数",
+    style: { 'margin-top': '40px' },
     layerShown() { return true; },
 
     startData() {
