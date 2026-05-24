@@ -78,15 +78,19 @@ function getClickGain() {
         if (hasAchievement("a", 17)) critChance = Math.min(critChance + achievementEffect("a", 17).toNumber(), critCap);
         if (hasMilestone("c5", 1)) critChance = Math.min(critChance + 0.5, 1);
         if (hasChallenge("c3", 11)) critChance = Math.min(critChance + 0.05, critCap);
+        if (layers.c3 && layers.c3.buyables) critChance = Math.min(critChance + buyableEffect("c3", 11).toNumber(), critCap);
 
         let critMult = new Decimal(3);
         if (hasUpgrade("c3", 11)) critMult = critMult.add(upgradeEffect("c3", 11));
         if (hasUpgrade("c3", 13)) critMult = critMult.add(upgradeEffect("c3", 13));
         if (hasAchievement("a", 18)) critMult = critMult.add(achievementEffect("a", 18));
         if (layers.c5 && player.c5.grid && player.c5.grid[102]) critMult = critMult.add(player.c5.grid[102] * 0.5);
-        if (layers.c3 && layers.c3.buyables) critChance = Math.min(critChance + buyableEffect("c3", 11).toNumber(), critCap);
-        let avgCrit = new Decimal(1).add(new Decimal(critChance).times(critMult.sub(1)));
-        base = base.times(avgCrit);
+
+        player._critChance = critChance;
+        player._critMult = critMult;
+    } else {
+        player._critChance = 0;
+        player._critMult = new Decimal(1);
     }
 
     if (layers.c4 && player.c4.points.gt(0)) {
@@ -170,6 +174,16 @@ function getClickGain() {
     return base;
 }
 
+function doClick() {
+    updateCombo();
+    let gain = getClickGain();
+    if (player._critChance > 0 && Math.random() < player._critChance) {
+        gain = gain.times(player._critMult || 1);
+    }
+    player.c1.points = player.c1.points.add(gain);
+    player.points = player.points.add(1);
+}
+
 addLayer("c1", {
     name: "起源",
     symbol: "C1",
@@ -218,16 +232,10 @@ addLayer("c1", {
         11: {
             title: "戳我！",
             display() {
-                let gain = getClickGain();
-                return `戳一下 → +${format(gain)} 点击分数`;
+                return `戳一下 → +${format(getClickGain())} 点击分数`;
             },
             canClick() { return true; },
-            onClick() {
-                updateCombo();
-                let gain = getClickGain();
-                player.c1.points = player.c1.points.add(gain);
-                player.points = player.points.add(1);
-            }
+            onClick() { doClick(); }
         }
     },
 
@@ -397,9 +405,9 @@ addLayer("c1", {
             player.c1.challenge13Start = new Decimal(0);
             player.c1.upgrades = [];
             let autoIds = [];
-            if (hasMilestone("c2", 2)) autoIds = [11,12,13,14,15,16,17,18];
-            else if (hasMilestone("c2", 1)) autoIds = [11,12,13,14,15];
-            else if (hasMilestone("c2", 0)) autoIds = [11,12,13];
+            if (hasMilestone("c2", 2)) autoIds = [11, 12, 13, 14, 15, 16, 17, 18];
+            else if (hasMilestone("c2", 1)) autoIds = [11, 12, 13, 14, 15];
+            else if (hasMilestone("c2", 0)) autoIds = [11, 12, 13];
 
             if (hasMilestone("c1", 2)) autoIds.push(19);
             if (hasMilestone("c1", 3)) autoIds.push(21);
@@ -488,14 +496,11 @@ addLayer("c2", {
     clickables: {
         11: {
             title: "猛击！",
-            display() { return `蓄力一击 → +${format(getClickGain())} 点击分数`; },
+            display() {
+                return `蓄力一击 → +${format(getClickGain())} 点击分数`;
+            },
             canClick() { return true; },
-            onClick() {
-                updateCombo();
-                let gain = getClickGain();
-                player.c1.points = player.c1.points.add(gain);
-                player.points = player.points.add(1);
-            }
+            onClick() { doClick(); }
         }
     },
 
@@ -567,10 +572,10 @@ addLayer("c2", {
             height: 20,
             progress() { return player.c2.points.div(30).min(1).toNumber(); },
             display() { return `力量蓄能：${format(player.c2.points)} / 30`; },
-            fillStyle: {'background-color': '#FFA500'},
-            baseStyle: {'background-color': '#333'},
-            borderStyle: {'border-radius': '10px'},
-            textStyle: {'font-size': '12px'},
+            fillStyle: { 'background-color': '#FFA500' },
+            baseStyle: { 'background-color': '#333' },
+            borderStyle: { 'border-radius': '10px' },
+            textStyle: { 'font-size': '12px' },
             unlocked: true,
         },
     },
@@ -592,58 +597,58 @@ addLayer("c2", {
                 player[this.layer].points = player[this.layer].points.sub(cost);
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1));
             },
-            style: {'height':'120px'},
+            style: { 'height': '120px' },
             purchaseLimit: new Decimal(50),
         },
     },
 
     milestones: {
-    0: {
-        requirementDescription: "拥有 5 点击力量",
-        effectDescription: "不用从头开始了！重置后自动拿前 3 个起源升级",
-        done() { return player.c2.points.gte(5); }
+        0: {
+            requirementDescription: "拥有 5 点击力量",
+            effectDescription: "不用从头开始了！重置后自动拿前 3 个起源升级",
+            done() { return player.c2.points.gte(5); }
+        },
+        1: {
+            requirementDescription: "拥有 25 点击力量",
+            effectDescription: "越来越熟练。重置后自动拿前 5 个起源升级",
+            done() { return player.c2.points.gte(25); }
+        },
+        2: {
+            requirementDescription: "拥有 125 点击力量",
+            effectDescription: "满配开局！重置后起源全自动满级",
+            done() { return player.c2.points.gte(125); }
+        }
     },
-    1: {
-        requirementDescription: "拥有 25 点击力量",
-        effectDescription: "越来越熟练。重置后自动拿前 5 个起源升级",
-        done() { return player.c2.points.gte(25); }
-    },
-    2: {
-        requirementDescription: "拥有 125 点击力量",
-        effectDescription: "满配开局！重置后起源全自动满级",
-        done() { return player.c2.points.gte(125); }
+
+    doReset(resettingLayer) {
+
+        if (resettingLayer === this.layer) return;
+
+        if (resettingLayer === "c3" || resettingLayer === "c4" || resettingLayer === "c5" || resettingLayer === "c6" || resettingLayer === "c7") {
+            let savedMilestones = player.c2.milestones;
+            let savedChallenges = player.c2.challenges;
+            let savedBest = player.c2.best;
+            let savedTotal = player.c2.total;
+
+            layerDataReset("c2");
+
+            player.c2.milestones = savedMilestones;
+            player.c2.challenges = savedChallenges;
+            player.c2.best = savedBest;
+            player.c2.total = savedTotal;
+
+            player.c2.upgrades = [];
+            let autoIds = [];
+            if (hasMilestone("c3", 1) || hasMilestone("c3", 2)) autoIds = [11, 12, 13, 14, 21, 22];
+            else if (hasMilestone("c3", 0)) autoIds = [11, 12];
+
+            autoIds.forEach(id => {
+                if (!player.c2.upgrades.includes(id)) {
+                    player.c2.upgrades.push(id);
+                }
+            });
+        }
     }
-},
-
-doReset(resettingLayer) {
-
-if (resettingLayer === this.layer) return;
-
-    if (resettingLayer === "c3" || resettingLayer === "c4" || resettingLayer === "c5" || resettingLayer === "c6" || resettingLayer === "c7") {
-        let savedMilestones = player.c2.milestones;
-        let savedChallenges = player.c2.challenges;
-        let savedBest = player.c2.best;
-        let savedTotal = player.c2.total;
-
-        layerDataReset("c2");
-
-        player.c2.milestones = savedMilestones;
-        player.c2.challenges = savedChallenges;
-        player.c2.best = savedBest;
-        player.c2.total = savedTotal;
-
-        player.c2.upgrades = [];
-        let autoIds = [];
-        if (hasMilestone("c3", 1) || hasMilestone("c3", 2)) autoIds = [11,12,13,14,21,22];
-        else if (hasMilestone("c3", 0)) autoIds = [11,12];
-
-        autoIds.forEach(id => {
-            if (!player.c2.upgrades.includes(id)) {
-                player.c2.upgrades.push(id);
-            }
-        });
-    }
-}
 });
 
 addLayer("c3", {
@@ -690,7 +695,7 @@ addLayer("c3", {
             if (hasUpgrade("c3", 11)) cm = cm.add(upgradeEffect("c3", 11));
             if (hasUpgrade("c3", 13)) cm = cm.add(upgradeEffect("c3", 13));
             let scNote = player.c3.points.gt(15) ? "（获取软上限生效中）" : "";
-            return `瞄准要害：暴击率 ${(cc*100).toFixed(1)}% | 暴击倍率 ×${format(cm)}${scNote}`;
+            return `瞄准要害：暴击率 ${(cc * 100).toFixed(1)}% | 暴击倍率 ×${format(cm)}${scNote}`;
         }],
         "blank",
         ["display-text", () => `当前点击分数：${format(player.c1.points)}`],
@@ -709,14 +714,11 @@ addLayer("c3", {
     clickables: {
         11: {
             title: "精准打击！",
-            display() { return `致命一击 → +${format(getClickGain())} 点击分数`; },
+            display() {
+                return `致命一击 → +${format(getClickGain())} 点击分数`;
+            },
             canClick() { return true; },
-            onClick() {
-                updateCombo();
-                let gain = getClickGain();
-                player.c1.points = player.c1.points.add(gain);
-                player.points = player.points.add(1);
-            }
+            onClick() { doClick(); }
         }
     },
 
@@ -804,8 +806,8 @@ addLayer("c3", {
 
             player.c3.upgrades = [];
             let autoIds = [];
-            if (hasMilestone("c4", 1) || hasMilestone("c4", 2) || hasMilestone("c4", 3)) autoIds = [11,12,13,14];
-            else if (hasMilestone("c4", 0)) autoIds = [11,12];
+            if (hasMilestone("c4", 1) || hasMilestone("c4", 2) || hasMilestone("c4", 3)) autoIds = [11, 12, 13, 14];
+            else if (hasMilestone("c4", 0)) autoIds = [11, 12];
 
             autoIds.forEach(id => {
                 if (!player.c3.upgrades.includes(id)) {
@@ -892,10 +894,10 @@ addLayer("c4", {
                 return Math.min(c / 100, 1);
             },
             display() { return `连击充能：${player.clickCombo || 0} / 100`; },
-            fillStyle: {'background-color': '#4488FF'},
-            baseStyle: {'background-color': '#333'},
-            borderStyle: {'border-radius': '10px'},
-            textStyle: {'font-size': '12px'},
+            fillStyle: { 'background-color': '#4488FF' },
+            baseStyle: { 'background-color': '#333' },
+            borderStyle: { 'border-radius': '10px' },
+            textStyle: { 'font-size': '12px' },
             unlocked: true,
         },
     },
@@ -903,14 +905,11 @@ addLayer("c4", {
     clickables: {
         11: {
             title: "共鸣点击！",
-            display() { return `共鸣回响 → +${format(getClickGain())} 点击分数`; },
+            display() {
+                return `共鸣回响 → +${format(getClickGain())} 点击分数`;
+            },
             canClick() { return true; },
-            onClick() {
-                updateCombo();
-                let gain = getClickGain();
-                player.c1.points = player.c1.points.add(gain);
-                player.points = player.points.add(1);
-            }
+            onClick() { doClick(); }
         }
     },
 
@@ -1019,7 +1018,7 @@ addLayer("c4", {
 
             player.c4.upgrades = [];
             let autoIds = [];
-            if (hasMilestone("c5", 0) || hasMilestone("c5", 1)) autoIds = [11,12,13,14];
+            if (hasMilestone("c5", 0) || hasMilestone("c5", 1)) autoIds = [11, 12, 13, 14];
 
             autoIds.forEach(id => {
                 if (!player.c4.upgrades.includes(id)) {
@@ -1087,14 +1086,11 @@ addLayer("c5", {
     clickables: {
         11: {
             title: "升华一击！",
-            display() { return `超凡入圣 → +${format(getClickGain())} 点击分数`; },
+            display() {
+                return `超凡入圣 → +${format(getClickGain())} 点击分数`;
+            },
             canClick() { return true; },
-            onClick() {
-                updateCombo();
-                let gain = getClickGain();
-                player.c1.points = player.c1.points.add(gain);
-                player.points = player.points.add(1);
-            }
+            onClick() { doClick(); }
         }
     },
 
@@ -1133,10 +1129,10 @@ addLayer("c5", {
             let cost = Decimal.pow(2, data).times(base);
             if (data === 0) return `消耗 ${format(cost)} 升华 → 解锁此升华`;
             let effects = {
-                101: `力量基础倍率 +0.02 (当前 +${(data*0.02).toFixed(2)})`,
-                102: `暴击倍率 +0.5 (当前 +${(data*0.5).toFixed(1)})`,
-                201: `连击窗口 +0.1秒 (当前 +${(data*0.1).toFixed(1)}秒)`,
-                202: `永恒压缩效率 +2% (当前 +${(data*2)}%)`,
+                101: `力量基础倍率 +0.02 (当前 +${(data * 0.02).toFixed(2)})`,
+                102: `暴击倍率 +0.5 (当前 +${(data * 0.5).toFixed(1)})`,
+                201: `连击窗口 +0.1秒 (当前 +${(data * 0.1).toFixed(1)}秒)`,
+                202: `永恒压缩效率 +2% (当前 +${(data * 2)}%)`,
             };
             let eff = effects[id] || `增益`;
             let next = Decimal.pow(2, data).times(base);
@@ -1196,7 +1192,7 @@ addLayer("c5", {
             player.c5.total = savedTotal;
 
             player.c5.upgrades = [];
-            if (hasMilestone("c6", 0) || hasUpgrade("c6", 14)) player.c5.upgrades = [11,12,13];
+            if (hasMilestone("c6", 0) || hasUpgrade("c6", 14)) player.c5.upgrades = [11, 12, 13];
         }
     }
 });
@@ -1280,10 +1276,10 @@ addLayer("c6", {
                 if (hasUpgrade("c6", 11)) scReduction = scReduction.times(1.5);
                 return `时空压缩进度：${(scReduction.times(100)).min(95).toFixed(1)}%`;
             },
-            fillStyle: {'background-color': '#00FFFF'},
-            baseStyle: {'background-color': '#111'},
-            borderStyle: {'border-radius': '12px', 'border': '2px solid #00FFFF'},
-            textStyle: {'font-size': '12px', 'color': '#00FFFF'},
+            fillStyle: { 'background-color': '#00FFFF' },
+            baseStyle: { 'background-color': '#111' },
+            borderStyle: { 'border-radius': '12px', 'border': '2px solid #00FFFF' },
+            textStyle: { 'font-size': '12px', 'color': '#00FFFF' },
             unlocked: true,
         },
     },
@@ -1291,14 +1287,11 @@ addLayer("c6", {
     clickables: {
         11: {
             title: "永恒之触！",
-            display() { return `穿越时空 → +${format(getClickGain())} 点击分数`; },
+            display() {
+                return `穿越时空 → +${format(getClickGain())} 点击分数`;
+            },
             canClick() { return true; },
-            onClick() {
-                updateCombo();
-                let gain = getClickGain();
-                player.c1.points = player.c1.points.add(gain);
-                player.points = player.points.add(1);
-            }
+            onClick() { doClick(); }
         }
     },
 
@@ -1377,7 +1370,7 @@ addLayer("c6", {
             player.c6.total = savedTotal;
 
             player.c6.upgrades = [];
-            if (hasMilestone("c7", 0)) player.c6.upgrades = [11,12,13,14,15];
+            if (hasMilestone("c7", 0)) player.c6.upgrades = [11, 12, 13, 14, 15];
 
             let savedM5 = player.c5.milestones;
             let savedB5 = player.c5.best;
@@ -1390,7 +1383,7 @@ addLayer("c6", {
             player.c5.total = savedT5;
             player.c5.upgrades = [];
             let autoIds = [];
-            if (hasMilestone("c6", 0)) autoIds = [11,12,13];
+            if (hasMilestone("c6", 0)) autoIds = [11, 12, 13];
             autoIds.forEach(id => {
                 if (!player.c5.upgrades.includes(id)) player.c5.upgrades.push(id);
             });
@@ -1470,14 +1463,11 @@ addLayer("c7", {
     clickables: {
         11: {
             title: "混沌一击！",
-            display() { return `命运轮盘 → +${format(getClickGain())} 点击分数`; },
+            display() {
+                return `命运轮盘 → +${format(getClickGain())} 点击分数`;
+            },
             canClick() { return true; },
-            onClick() {
-                updateCombo();
-                let gain = getClickGain();
-                player.c1.points = player.c1.points.add(gain);
-                player.points = player.points.add(1);
-            }
+            onClick() { doClick(); }
         },
         12: {
             title: "神秘风",
