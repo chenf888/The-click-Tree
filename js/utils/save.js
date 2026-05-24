@@ -261,34 +261,25 @@ function NaNcheck(data) {
 	}
 }
 function exportSave() {
-	//if (NaNalert) return
-	let str = btoa(JSON.stringify(player));
-
-	const el = document.createElement("textarea");
-	el.value = str;
-	document.body.appendChild(el);
-	el.select();
-	el.setSelectionRange(0, 99999);
-	document.execCommand("copy");
-	document.body.removeChild(el);
+	let str = btoa(unescape(encodeURIComponent(JSON.stringify(player))));
+	navigator.clipboard.writeText(str).then(() => {
+		alert("存档已复制到剪贴板！");
+	}).catch(() => {
+		const el = document.createElement("textarea");
+		el.value = str;
+		document.body.appendChild(el);
+		el.select();
+		el.setSelectionRange(0, 99999);
+		document.execCommand("copy");
+		document.body.removeChild(el);
+	});
 }
 function importSave(imported = undefined, forced = false) {
 	if (imported === undefined)
 		imported = prompt("请粘贴你的存档");
-	try {
-		tempPlr = Object.assign(getStartPlayer(), JSON.parse(atob(imported)));
-		if (tempPlr.versionType != getModID() && !forced && !confirm("此存档似乎是其他 mod 的！确定要导入吗？")) // Wrong save (use "Forced" to force it to accept.)
-			return;
-		player = tempPlr;
-		player.versionType = getModID();
-		fixSave();
-		versionCheck();
-		NaNcheck(save)
-		save();
-		window.location.reload();
-	} catch (e) {
-		return;
-	}
+	if (!imported) return;
+	localStorage.setItem(getModID(), imported);
+	window.location.reload();
 }
 function versionCheck() {
 	let setVersion = true;

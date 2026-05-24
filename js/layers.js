@@ -77,6 +77,7 @@ function getClickGain() {
         if (hasMilestone("c3", 2)) critChance = Math.min(critChance + 0.1, critCap);
         if (hasAchievement("a", 17)) critChance = Math.min(critChance + achievementEffect("a", 17).toNumber(), critCap);
         if (hasMilestone("c5", 1)) critChance = Math.min(critChance + 0.5, 1);
+        if (hasUpgrade("c3", 12)) critChance = Math.min(critChance + 0.05, critCap);
         if (hasChallenge("c3", 11)) critChance = Math.min(critChance + 0.05, critCap);
         if (layers.c3 && layers.c3.buyables) critChance = Math.min(critChance + buyableEffect("c3", 11).toNumber(), critCap);
 
@@ -86,11 +87,11 @@ function getClickGain() {
         if (hasAchievement("a", 18)) critMult = critMult.add(achievementEffect("a", 18));
         if (layers.c5 && player.c5.grid && player.c5.grid[102]) critMult = critMult.add(player.c5.grid[102] * 0.5);
 
-        player._critChance = critChance;
-        player._critMult = critMult;
+        window._critChance = critChance;
+        window._critMult = critMult;
     } else {
-        player._critChance = 0;
-        player._critMult = new Decimal(1);
+        window._critChance = 0;
+        window._critMult = new Decimal(1);
     }
 
     if (layers.c4 && player.c4.points.gt(0)) {
@@ -177,8 +178,8 @@ function getClickGain() {
 function doClick() {
     updateCombo();
     let gain = getClickGain();
-    if (player._critChance > 0 && Math.random() < player._critChance) {
-        gain = gain.times(player._critMult || 1);
+    if (window._critChance > 0 && Math.random() < window._critChance) {
+        gain = gain.times(window._critMult || 1);
     }
     player.c1.points = player.c1.points.add(gain);
     player.points = player.points.add(1);
@@ -375,7 +376,7 @@ addLayer("c1", {
     },
 
     update(diff) {
-        player._lastClickCount = player.points;
+        window._lastClickCount = player.points;
         if (inChallenge("c1", 11)) {
             let elapsed = (Date.now() - player.c1.challenge11StartTime) / 1000;
             if (elapsed > 30) {
@@ -387,7 +388,7 @@ addLayer("c1", {
     doReset(resettingLayer) {
 
         if (resettingLayer === "c2" || resettingLayer === "c3" || resettingLayer === "c4" || resettingLayer === "c5" || resettingLayer === "c6" || resettingLayer === "c7") {
-            let savedClickCount = player._savedClickCount;
+            let savedClickCount = window._savedClickCount;
 
             let savedMilestones = player.c1.milestones;
             let savedChallenges = player.c1.challenges;
@@ -420,10 +421,10 @@ addLayer("c1", {
 
             if (savedClickCount !== undefined) {
                 player.points = savedClickCount;
-            } else if (player._lastClickCount !== undefined) {
-                player.points = player._lastClickCount;
+            } else if (window._lastClickCount !== undefined) {
+                player.points = window._lastClickCount;
             }
-            player._savedClickCount = undefined;
+            window._savedClickCount = undefined;
         }
     }
 });
@@ -459,7 +460,7 @@ addLayer("c2", {
     },
 
     onPrestige() {
-        player._savedClickCount = player.points;
+        window._savedClickCount = player.points;
     },
 
     tabFormat: [
@@ -682,7 +683,7 @@ addLayer("c3", {
     },
 
     onPrestige() {
-        player._savedClickCount = player.points;
+        window._savedClickCount = player.points;
     },
 
     tabFormat: [
@@ -850,7 +851,7 @@ addLayer("c4", {
     },
 
     onPrestige() {
-        player._savedClickCount = player.points;
+        window._savedClickCount = player.points;
     },
 
     tabFormat: [
@@ -1061,7 +1062,7 @@ addLayer("c5", {
     },
 
     onPrestige() {
-        player._savedClickCount = player.points;
+        window._savedClickCount = player.points;
     },
 
     tabFormat: [
@@ -1229,7 +1230,7 @@ addLayer("c6", {
     },
 
     onPrestige() {
-        player._savedClickCount = player.points;
+        window._savedClickCount = player.points;
     },
 
     tabFormat: [
@@ -1423,7 +1424,7 @@ addLayer("c7", {
     },
 
     onPrestige() {
-        player._savedClickCount = player.points;
+        window._savedClickCount = player.points;
     },
 
     tabFormat: [
