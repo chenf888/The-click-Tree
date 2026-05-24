@@ -3,6 +3,7 @@ function updateCombo() {
     if (player.clickCombo === undefined) player.clickCombo = 0;
 
     let comboWindow = 1.5;
+    if (inChallenge("c4", 11)) comboWindow = 0.8;
     if (layers.c4 && hasUpgrade("c4", 11)) comboWindow += 0.5;
     if (layers.c4 && hasUpgrade("c4", 13)) comboWindow += 0.5;
     if (layers.c4 && hasUpgrade("c4", 14)) comboWindow += 1;
@@ -61,6 +62,7 @@ function getClickGain() {
             effectivePow = softcapStart.add(excess.pow(0.5));
         }
         let basePow = hasUpgrade("c2", 11) ? 1.20 : 1.12;
+        if (inChallenge("c2", 11)) basePow = 1.05;
         if (hasChallenge("c2", 11)) basePow += 0.05;
         if (layers.c5 && player.c5.grid && player.c5.grid[101]) basePow += player.c5.grid[101] * 0.02;
         let powerBonus = Decimal.pow(basePow, effectivePow);
@@ -87,6 +89,8 @@ function getClickGain() {
         if (hasAchievement("a", 18)) critMult = critMult.add(achievementEffect("a", 18));
         if (layers.c5 && player.c5.grid && player.c5.grid[102]) critMult = critMult.add(player.c5.grid[102] * 0.5);
 
+        if (inChallenge("c3", 11)) critChance = 0;
+
         window._critChance = critChance;
         window._critMult = critMult;
     } else {
@@ -100,6 +104,7 @@ function getClickGain() {
             let comboBase = player.c4.points.times(0.5);
             if (hasUpgrade("c4", 12)) comboBase = comboBase.times(1.5);
             if (hasAchievement("a", 19)) comboBase = comboBase.times(1.25);
+            if (hasChallenge("c4", 11)) comboBase = comboBase.times(1.25);
             if (hasMilestone("c4", 3)) comboBase = comboBase.times(2);
             let logCombo = Math.log2(combo + 1);
             let comboMult = new Decimal(1).add(new Decimal(logCombo).times(comboBase));
@@ -113,11 +118,19 @@ function getClickGain() {
         base = base.times(transBonus);
     }
 
-    if (hasAchievement("a", 21)) base = base.times(1.1);
-    if (hasAchievement("a", 22)) base = base.times(1.2);
-    if (hasAchievement("a", 24)) base = base.times(1.5);
-    if (hasAchievement("a", 25)) base = base.times(1.2);
-    if (hasAchievement("a", 26)) base = base.times(1.2);
+    if (hasUpgrade("c5", 11)) {
+        if (hasAchievement("a", 21)) base = base.times(1.2);
+        if (hasAchievement("a", 22)) base = base.times(1.4);
+        if (hasAchievement("a", 24)) base = base.times(2.0);
+        if (hasAchievement("a", 25)) base = base.times(1.4);
+        if (hasAchievement("a", 26)) base = base.times(1.4);
+    } else {
+        if (hasAchievement("a", 21)) base = base.times(1.1);
+        if (hasAchievement("a", 22)) base = base.times(1.2);
+        if (hasAchievement("a", 24)) base = base.times(1.5);
+        if (hasAchievement("a", 25)) base = base.times(1.2);
+        if (hasAchievement("a", 26)) base = base.times(1.2);
+    }
     if (hasMilestone("c7", 2)) base = base.times(2);
 
     if (hasUpgrade("c5", 13)) {
@@ -126,8 +139,10 @@ function getClickGain() {
 
     if (layers.c6 && player.c6.points.gt(0)) {
         let scReduction = player.c6.points.times(0.04);
+        if (inChallenge("c6", 11)) scReduction = new Decimal(0);
         if (hasUpgrade("c6", 11)) scReduction = scReduction.times(1.5);
         if (hasAchievement("a", 23)) scReduction = scReduction.add(0.1);
+        if (hasChallenge("c6", 11)) scReduction = scReduction.add(0.05);
         if (hasUpgrade("c6", 15)) scReduction = scReduction.times(2).min(0.95);
         if (layers.c5 && player.c5.grid && player.c5.grid[202]) scReduction = scReduction.add(player.c5.grid[202] * 0.02);
         if (scReduction.gt(0.95)) scReduction = new Decimal(0.95);
@@ -153,16 +168,20 @@ function getClickGain() {
             if (hasUpgrade("c7", 14)) baseMult = baseMult.times(1.25);
         }
 
-        let varianceMult = new Decimal(0.7).add(stability.times(1.3));
+        let baseVarianceMin = new Decimal(0.7);
+        let baseVarianceMax = new Decimal(2);
+        if (inChallenge("c7", 11)) { baseVarianceMin = new Decimal(0.1); baseVarianceMax = new Decimal(5); }
+        let varianceMult = baseVarianceMin.add(stability.times(1.3));
         if (varianceMult.gt(1)) varianceMult = new Decimal(1);
         let min = baseMult.times(varianceMult);
         if (hasUpgrade("c7", 12)) min = min.add(0.3);
         if (hasUpgrade("c7", 15)) min = min.add(0.5);
         if (hasMilestone("c7", 1)) min = min.add(0.3);
         if (hasAchievement("a", 25)) min = min.add(0.2);
-        let max = baseMult.times(new Decimal(2).sub(stability));
+        let max = baseMult.times(baseVarianceMax.sub(stability));
         if (max.lt(min.add(0.3))) max = min.add(0.3);
         let avg = min.add(max).div(2);
+        if (hasChallenge("c7", 11)) avg = avg.times(1.2);
         base = base.times(avg);
     }
 
@@ -472,6 +491,7 @@ addLayer("c2", {
             let softcapStart = new Decimal(10);
             let effectivePow = rawPow.lte(softcapStart) ? rawPow : softcapStart.add(rawPow.sub(softcapStart).pow(0.5));
             let basePow = hasUpgrade("c2", 11) ? 1.20 : 1.12;
+            if (inChallenge("c2", 11)) basePow = 1.05;
             if (hasChallenge("c2", 11)) basePow += 0.05;
             let bonus = Decimal.pow(basePow, effectivePow);
             if (hasAchievement("a", 16)) bonus = bonus.times(achievementEffect("a", 16));
@@ -527,7 +547,7 @@ addLayer("c2", {
         },
         14: {
             title: "力量爆发",
-            description: "瞬间释放全部潜能！点击力量 ×1.3（永久保留）",
+            description: "瞬间释放全部潜能！购买时点击力量 ×1.3（一次性）",
             cost: new Decimal(8),
             onPurchase() {
                 player.c2.points = player.c2.points.times(1.3);
@@ -554,12 +574,13 @@ addLayer("c2", {
         11: {
             name: "力竭",
             challengeDescription: "力量被抽干！倍率基础降至 1.05",
-            goalDescription: "在挑战中累积达到 20 点击力量",
+            goalDescription: "在挑战中增量获得 20 点击力量",
             rewardDescription: "永久力量倍率基础 +0.05",
             canComplete() {
-                return player.c2.points.gte(20);
+                if (player.c2.challenge11Start === undefined) return false;
+                return player.c2.points.sub(player.c2.challenge11Start).gte(20);
             },
-            onEnter() { },
+            onEnter() { player.c2.challenge11Start = player.c2.points; },
             onExit() { },
             onComplete() { },
             unlocked() { return hasMilestone("c2", 0); }
@@ -692,9 +713,14 @@ addLayer("c3", {
         ["display-text", () => {
             let cc = Math.min(player.c3.points.toNumber() * 0.02, hasUpgrade("c3", 14) ? 0.9 : 0.75);
             if (hasMilestone("c3", 2)) cc = Math.min(cc + 0.1, hasUpgrade("c3", 14) ? 0.9 : 0.75);
+            if (hasAchievement("a", 17)) cc = Math.min(cc + achievementEffect("a", 17).toNumber(), hasUpgrade("c3",14) ? 0.9 : 0.75);
+            if (hasMilestone("c5", 1)) cc = Math.min(cc + 0.5, 1);
+            if (hasUpgrade("c3", 12)) cc = Math.min(cc + 0.05, hasUpgrade("c3",14) ? 0.9 : 0.75);
+            if (hasChallenge("c3", 11)) cc = Math.min(cc + 0.05, hasUpgrade("c3",14) ? 0.9 : 0.75);
             let cm = new Decimal(3);
             if (hasUpgrade("c3", 11)) cm = cm.add(upgradeEffect("c3", 11));
             if (hasUpgrade("c3", 13)) cm = cm.add(upgradeEffect("c3", 13));
+            if (hasAchievement("a", 18)) cm = cm.add(achievementEffect("a", 18));
             let scNote = player.c3.points.gt(15) ? "（获取软上限生效中）" : "";
             return `瞄准要害：暴击率 ${(cc * 100).toFixed(1)}% | 暴击倍率 ×${format(cm)}${scNote}`;
         }],
@@ -753,8 +779,8 @@ addLayer("c3", {
     challenges: {
         11: {
             name: "镣铐之舞",
-            challengeDescription: "暴击倍率被压制到 ×1.5，但你依然可以起舞！",
-            goalDescription: "在挑战中累积获得 100 点击力量",
+            challengeDescription: "基础暴击率被封印，无法享受暴击系统的加成。",
+            goalDescription: "在挑战中累积获得 100 点击力量（以历史最高为准）",
             rewardDescription: "永久暴击率 +5%",
             canComplete() {
                 if (player.c3.challenge11Start === undefined) return false;
@@ -860,6 +886,7 @@ addLayer("c4", {
         ["display-text", () => {
             let combo = player.clickCombo || 0;
             let comboWindow = 1.5;
+            if (inChallenge("c4", 11)) comboWindow = 0.8;
             if (hasUpgrade("c4", 11)) comboWindow += 0.5;
             if (hasUpgrade("c4", 13)) comboWindow += 0.5;
             if (hasUpgrade("c4", 14)) comboWindow += 1;
@@ -867,6 +894,8 @@ addLayer("c4", {
             if (layers.c5 && player.c5.grid && player.c5.grid[201]) comboWindow += player.c5.grid[201] * 0.1;
             let comboBase = player.c4.points.times(0.5);
             if (hasUpgrade("c4", 12)) comboBase = comboBase.times(1.5);
+            if (hasAchievement("a", 19)) comboBase = comboBase.times(1.25);
+            if (hasChallenge("c4", 11)) comboBase = comboBase.times(1.25);
             if (hasMilestone("c4", 3)) comboBase = comboBase.times(2);
             let comboVal = combo > 0 ? format(new Decimal(1).add(new Decimal(Math.log2(combo + 1)).times(comboBase))) : "×1";
             return `连击 ${combo} 层 | 倍率 ${comboVal} | 窗口 ${comboWindow.toFixed(1)}秒`;
@@ -941,12 +970,15 @@ addLayer("c4", {
         11: {
             name: "刀尖起舞",
             challengeDescription: "连击窗口缩至 0.8 秒！在刀尖上跳舞吧。",
-            goalDescription: "在挑战中达到 30 连击",
+            goalDescription: "在挑战中达到 50 连击",
             rewardDescription: "永久连击倍率 +25%",
             canComplete() {
-                return (player.clickCombo || 0) >= 30;
+                if (player.c4.challenge11Max === undefined) player.c4.challenge11Max = 0;
+                let c = player.clickCombo || 0;
+                if (c > player.c4.challenge11Max) player.c4.challenge11Max = c;
+                return player.c4.challenge11Max >= 50;
             },
-            onEnter() { },
+            onEnter() { player.c4.challenge11Max = 0; player.clickCombo = 0; },
             onExit() { player.clickCombo = 0; },
             onComplete() { },
             unlocked() { return hasMilestone("c4", 0); }
@@ -983,6 +1015,7 @@ addLayer("c4", {
         if (player.clickCombo === undefined) player.clickCombo = 0;
 
         let comboWindow = 1.5;
+        if (inChallenge("c4", 11)) comboWindow = 0.8;
         if (hasUpgrade("c4", 11)) comboWindow += 0.5;
         if (hasUpgrade("c4", 13)) comboWindow += 0.5;
         if (hasUpgrade("c4", 14)) comboWindow += 1;
@@ -1329,10 +1362,13 @@ addLayer("c6", {
         11: {
             name: "时间牢笼",
             challengeDescription: "软上限压缩暂不可用，从零证明自己。",
-            goalDescription: "在挑战中累积获得 50,000,000 点击分数",
+            goalDescription: "在挑战中增量获得 100,000,000 点击分数",
             rewardDescription: "永久软上限压缩 +5%",
-            canComplete() { return player.c1.points.gte(50000000); },
-            onEnter() { },
+            canComplete() {
+                if (player.c6.challenge11Start === undefined) return false;
+                return player.c1.points.sub(player.c6.challenge11Start).gte(100000000);
+            },
+            onEnter() { player.c6.challenge11Start = player.c1.points; },
             onExit() { },
             onComplete() { },
             unlocked() { return hasMilestone("c6", 0); }
@@ -1358,7 +1394,10 @@ addLayer("c6", {
     },
 
     doReset(resettingLayer) {
-        if (resettingLayer === this.layer) return;
+        if (resettingLayer === this.layer) {
+            if (hasMilestone("c6", 1)) player.c6.upgrades = [11, 12];
+            return;
+        }
         if (resettingLayer === "c7") {
             let savedMilestones = player.c6.milestones;
             let savedBest = player.c6.best;
@@ -1371,6 +1410,7 @@ addLayer("c6", {
             player.c6.total = savedTotal;
 
             player.c6.upgrades = [];
+            if (hasMilestone("c6", 1)) player.c6.upgrades = [11, 12];
             if (hasMilestone("c7", 0)) player.c6.upgrades = [11, 12, 13, 14, 15];
 
             let savedM5 = player.c5.milestones;
@@ -1560,10 +1600,13 @@ addLayer("c7", {
         11: {
             name: "混沌风暴",
             challengeDescription: "混沌倍率范围扩至 0.1×~5×，走向极端。",
-            goalDescription: "在挑战中累积获得 200,000,000 点击分数",
+            goalDescription: "在挑战中增量获得 500,000,000 点击分数",
             rewardDescription: "永久混沌期望倍率 +20%",
-            canComplete() { return player.c1.points.gte(200000000); },
-            onEnter() { },
+            canComplete() {
+                if (player.c7.challenge11Start === undefined) return false;
+                return player.c1.points.sub(player.c7.challenge11Start).gte(500000000);
+            },
+            onEnter() { player.c7.challenge11Start = player.c1.points; },
             onExit() { },
             onComplete() { },
             unlocked() { return hasMilestone("c7", 0); }
