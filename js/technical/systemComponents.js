@@ -158,7 +158,7 @@ var systemComponents = {
             </tr>
             <tr>
                 <td><button class="opt" onclick="exportSave()">导出到剪贴板</button></td>
-                <td><button class="opt" onclick="importSave()">导入</button></td>
+                <td><button class="opt" onclick="showImportDialog()">导入</button></td>
                 <td><button class="opt" onclick="toggleOpt('offlineProd')">离线生产: {{ options.offlineProd?"开":"关" }}</button></td>
             </tr>
             <tr>

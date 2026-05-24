@@ -275,11 +275,56 @@ function exportSave() {
 	});
 }
 function importSave(imported = undefined, forced = false) {
-	if (imported === undefined)
-		imported = prompt("请粘贴你的存档");
 	if (!imported) return;
 	localStorage.setItem(getModID(), imported);
 	window.location.reload();
+}
+
+function showImportDialog() {
+	let existing = document.getElementById("importOverlay");
+	if (existing) existing.remove();
+
+	let overlay = document.createElement("div");
+	overlay.id = "importOverlay";
+	overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;";
+
+	let box = document.createElement("div");
+	box.style.cssText = "background:#222;border:2px solid #888;border-radius:12px;padding:20px;width:600px;max-width:90vw;text-align:center;color:#eee;font-family:'Lucida Console',monospace;";
+
+	let title = document.createElement("h2");
+	title.textContent = "导入存档";
+	title.style.cssText = "margin:0 0 12px 0;color:#FFD700;";
+	box.appendChild(title);
+
+	let textarea = document.createElement("textarea");
+	textarea.placeholder = "在此粘贴存档代码...";
+	textarea.style.cssText = "width:100%;height:180px;background:#111;color:#fff;border:1px solid #555;border-radius:6px;padding:8px;font-family:monospace;font-size:13px;resize:vertical;";
+	box.appendChild(textarea);
+
+	let btnRow = document.createElement("div");
+	btnRow.style.cssText = "margin-top:14px;display:flex;gap:12px;justify-content:center;";
+
+	let cancelBtn = document.createElement("button");
+	cancelBtn.textContent = "取消";
+	cancelBtn.style.cssText = "padding:8px 28px;border-radius:6px;border:none;background:#555;color:#fff;cursor:pointer;font-size:15px;";
+	cancelBtn.onclick = () => overlay.remove();
+	btnRow.appendChild(cancelBtn);
+
+	let confirmBtn = document.createElement("button");
+	confirmBtn.textContent = "确定导入";
+	confirmBtn.style.cssText = "padding:8px 28px;border-radius:6px;border:none;background:#4CAF50;color:#fff;cursor:pointer;font-size:15px;font-weight:bold;";
+	confirmBtn.onclick = () => {
+		let val = textarea.value.trim();
+		if (!val) { alert("请先粘贴存档代码！"); return; }
+		overlay.remove();
+		importSave(val);
+	};
+	btnRow.appendChild(confirmBtn);
+
+	box.appendChild(btnRow);
+	overlay.appendChild(box);
+	document.body.appendChild(overlay);
+	textarea.focus();
 }
 function versionCheck() {
 	let setVersion = true;
