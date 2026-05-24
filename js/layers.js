@@ -77,6 +77,7 @@ function getClickGain() {
         if (hasMilestone("c3", 2)) critChance = Math.min(critChance + 0.1, critCap);
         if (hasAchievement("a", 17)) critChance = Math.min(critChance + achievementEffect("a", 17).toNumber(), critCap);
         if (hasMilestone("c5", 1)) critChance = Math.min(critChance + 0.5, 1);
+        if (hasChallenge("c3", 11)) critChance = Math.min(critChance + 0.05, critCap);
 
         let critMult = new Decimal(3);
         if (hasUpgrade("c3", 11)) critMult = critMult.add(upgradeEffect("c3", 11));
@@ -753,9 +754,13 @@ addLayer("c3", {
             goalDescription: "在挑战中累积获得 100 点击力量",
             rewardDescription: "永久暴击率 +5%",
             canComplete() {
-                return player.c2.points.gte(100);
+                if (player.c3.challenge11Start === undefined) return false;
+                let gained = player.c2.best.sub(player.c3.challenge11Start);
+                return gained.gte(100);
             },
-            onEnter() { },
+            onEnter() {
+                player.c3.challenge11Start = player.c2.best;
+            },
             onExit() { },
             onComplete() { },
             unlocked() { return hasMilestone("c3", 0); }
