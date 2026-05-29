@@ -892,6 +892,7 @@ addLayer("c4", {
             if (hasUpgrade("c4", 14)) comboWindow += 1;
             if (hasAchievement("a", 20)) comboWindow += 0.3;
             if (layers.c5 && player.c5.grid && player.c5.grid[201]) comboWindow += player.c5.grid[201] * 0.1;
+            if (!player.c4.points.gt(0)) return `先进行一次共鸣重置来激活连击系统！ | 连击窗口：${comboWindow.toFixed(1)}秒`;
             let comboBase = player.c4.points.times(0.5);
             if (hasUpgrade("c4", 12)) comboBase = comboBase.times(1.5);
             if (hasAchievement("a", 19)) comboBase = comboBase.times(1.25);
