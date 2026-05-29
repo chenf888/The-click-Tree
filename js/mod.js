@@ -11,11 +11,15 @@ let modInfo = {
 }
 
 let VERSION = {
-	num: "0.31",
-	name: "DEEP CLICK",
+	num: "0.32",
+	name: "The Click Tree",
 }
 
 let changelog = `<h1>更新日志：</h1><br>
+    <h3>v0.32</h3><br>
+        修了一些bug，更改了游戏部分机制，添加了更多软上限<br>
+		删除了100个主题<br>
+		添加了一些提高游戏体验的选项和一个层级<br>
     <h3>v0.31</h3><br>
         修了一些bug<br>
     <h3>v0.3</h3><br>

@@ -53,7 +53,7 @@ function getClickGain() {
 
     if (layers.c2 && player.c2.points.gt(0)) {
         let rawPow = player.c2.points;
-        let softcapStart = new Decimal(10);
+        let softcapStart = new Decimal(15);
         let effectivePow;
         if (rawPow.lte(softcapStart)) {
             effectivePow = rawPow;
@@ -61,14 +61,17 @@ function getClickGain() {
             let excess = rawPow.sub(softcapStart);
             effectivePow = softcapStart.add(excess.pow(0.5));
         }
-        let basePow = hasUpgrade("c2", 11) ? 1.20 : 1.12;
-        if (inChallenge("c2", 11)) basePow = 1.05;
+        let basePow = hasUpgrade("c2", 11) ? 1.09 : 1.06;
+        if (inChallenge("c2", 11)) basePow = 1.03;
         if (hasChallenge("c2", 11)) basePow += 0.05;
         if (layers.c5 && player.c5.grid && player.c5.grid[101]) basePow += player.c5.grid[101] * 0.02;
         let powerBonus = Decimal.pow(basePow, effectivePow);
         if (layers.c2 && layers.c2.buyables) powerBonus = powerBonus.times(buyableEffect("c2", 11));
         if (hasAchievement("a", 16)) powerBonus = powerBonus.times(achievementEffect("a", 16));
-        if (powerBonus.gt(100)) powerBonus = powerBonus.sqrt().times(10);
+        if (powerBonus.gt(50)) {
+            let bonExcess = powerBonus.sub(50);
+            powerBonus = new Decimal(50).add(bonExcess.pow(0.5).times(5));
+        }
         base = base.times(powerBonus);
     }
 
@@ -146,7 +149,11 @@ function getClickGain() {
         if (hasUpgrade("c6", 15)) scReduction = scReduction.times(2).min(0.95);
         if (layers.c5 && player.c5.grid && player.c5.grid[202]) scReduction = scReduction.add(player.c5.grid[202] * 0.02);
         if (scReduction.gt(0.95)) scReduction = new Decimal(0.95);
-        if (scReduction.gt(0.8)) scReduction = new Decimal(0.8).add(scReduction.sub(0.8).pow(0.5));
+        if (scReduction.gt(0.8)) {
+            let compExcess = scReduction.sub(0.8);
+            let compLogExp = new Decimal(1).div(compExcess.add(0.01).times(100).add(1).log10().add(1));
+            scReduction = new Decimal(0.8).add(compExcess.pow(compLogExp));
+        }
         let scMult = new Decimal(1).sub(scReduction);
         let bonus = new Decimal(1).div(scMult.max(0.1));
         if (hasUpgrade("c6", 12)) bonus = bonus.times(2);
@@ -185,10 +192,11 @@ function getClickGain() {
         base = base.times(avg);
     }
 
-    let cap1 = new Decimal(5000);
+    let cap1 = new Decimal(20000);
     if (base.gt(cap1)) {
         let excess = base.sub(cap1);
-        base = cap1.add(excess.pow(0.5).times(50));
+        let logExp = new Decimal(1.5).div(excess.div(5000).add(1).log10().add(2));
+        base = cap1.add(excess.pow(logExp).times(40));
     }
 
     return base;
@@ -406,6 +414,8 @@ addLayer("c1", {
 
     doReset(resettingLayer) {
 
+        let savedActive = player.c1.activeChallenge;
+
         if (resettingLayer === "c2" || resettingLayer === "c3" || resettingLayer === "c4" || resettingLayer === "c5" || resettingLayer === "c6" || resettingLayer === "c7") {
             let savedClickCount = window._savedClickCount;
 
@@ -445,6 +455,8 @@ addLayer("c1", {
             }
             window._savedClickCount = undefined;
         }
+
+        if (savedActive) Vue.set(player.c1, "activeChallenge", savedActive);
     }
 });
 
@@ -478,8 +490,12 @@ addLayer("c2", {
         }
     },
 
-    onPrestige() {
+    onPrestige(gain) {
         window._savedClickCount = player.points;
+        if (inChallenge("c2", 11) && gain && gain.gte(20)) {
+            player.c2.challenges[11] = (player.c2.challenges[11] || 0) + 1;
+            player.c2.activeChallenge = null;
+        }
     },
 
     tabFormat: [
@@ -488,16 +504,19 @@ addLayer("c2", {
         ["display-text", () => `当前点击分数：${format(player.c1.points)}`],
         ["display-text", () => {
             let rawPow = player.c2.points;
-            let softcapStart = new Decimal(10);
+            let softcapStart = new Decimal(15);
             let effectivePow = rawPow.lte(softcapStart) ? rawPow : softcapStart.add(rawPow.sub(softcapStart).pow(0.5));
-            let basePow = hasUpgrade("c2", 11) ? 1.20 : 1.12;
-            if (inChallenge("c2", 11)) basePow = 1.05;
+            let basePow = hasUpgrade("c2", 11) ? 1.09 : 1.06;
+            if (inChallenge("c2", 11)) basePow = 1.03;
             if (hasChallenge("c2", 11)) basePow += 0.05;
             let bonus = Decimal.pow(basePow, effectivePow);
             if (hasAchievement("a", 16)) bonus = bonus.times(achievementEffect("a", 16));
-            if (bonus.gt(100)) bonus = bonus.sqrt().times(10);
+            if (bonus.gt(50)) {
+                let bonExcess = bonus.sub(50);
+                bonus = new Decimal(50).add(bonExcess.pow(0.5).times(5));
+            }
             let scNote = rawPow.gt(softcapStart) ? "（软上限）" : "";
-            let scNote2 = Decimal.pow(basePow, effectivePow).gt(100) ? "（倍率已压缩）" : "";
+            let scNote2 = bonus.gt(50) ? "（倍率已压缩）" : "";
             return `力量涌动：每次点击 ×${format(bonus)}${scNote}${scNote2}${hasAchievement("a", 16) ? "（渴望之力加倍！）" : ""}`;
         }],
         "blank",
@@ -528,7 +547,7 @@ addLayer("c2", {
     upgrades: {
         11: {
             title: "力量觉醒",
-            description: "力量倍率基础从 1.12 飙升至 1.20",
+            description: "力量倍率基础从 1.06 飙升至 1.09",
             cost: new Decimal(1),
             onPurchase() { }
         },
@@ -574,13 +593,10 @@ addLayer("c2", {
         11: {
             name: "力竭",
             challengeDescription: "力量被抽干！倍率基础降至 1.05",
-            goalDescription: "在挑战中增量获得 20 点击力量",
+            goalDescription: "一次重置获得 20 点击力量",
             rewardDescription: "永久力量倍率基础 +0.05",
-            canComplete() {
-                if (player.c2.challenge11Start === undefined) return false;
-                return player.c2.points.sub(player.c2.challenge11Start).gte(20);
-            },
-            onEnter() { player.c2.challenge11Start = player.c2.points; },
+            canComplete() { return false; },
+            onEnter() { },
             onExit() { },
             onComplete() { },
             unlocked() { return hasMilestone("c2", 0); }
@@ -644,7 +660,10 @@ addLayer("c2", {
 
     doReset(resettingLayer) {
 
-        if (resettingLayer === this.layer) return;
+        if (resettingLayer === this.layer) {
+            if (inChallenge("c2", 11)) Vue.set(player.c2, "activeChallenge", 11);
+            return;
+        }
 
         if (resettingLayer === "c3" || resettingLayer === "c4" || resettingLayer === "c5" || resettingLayer === "c6" || resettingLayer === "c7") {
             let savedMilestones = player.c2.milestones;
@@ -713,10 +732,10 @@ addLayer("c3", {
         ["display-text", () => {
             let cc = Math.min(player.c3.points.toNumber() * 0.02, hasUpgrade("c3", 14) ? 0.9 : 0.75);
             if (hasMilestone("c3", 2)) cc = Math.min(cc + 0.1, hasUpgrade("c3", 14) ? 0.9 : 0.75);
-            if (hasAchievement("a", 17)) cc = Math.min(cc + achievementEffect("a", 17).toNumber(), hasUpgrade("c3",14) ? 0.9 : 0.75);
+            if (hasAchievement("a", 17)) cc = Math.min(cc + achievementEffect("a", 17).toNumber(), hasUpgrade("c3", 14) ? 0.9 : 0.75);
             if (hasMilestone("c5", 1)) cc = Math.min(cc + 0.5, 1);
-            if (hasUpgrade("c3", 12)) cc = Math.min(cc + 0.05, hasUpgrade("c3",14) ? 0.9 : 0.75);
-            if (hasChallenge("c3", 11)) cc = Math.min(cc + 0.05, hasUpgrade("c3",14) ? 0.9 : 0.75);
+            if (hasUpgrade("c3", 12)) cc = Math.min(cc + 0.05, hasUpgrade("c3", 14) ? 0.9 : 0.75);
+            if (hasChallenge("c3", 11)) cc = Math.min(cc + 0.05, hasUpgrade("c3", 14) ? 0.9 : 0.75);
             let cm = new Decimal(3);
             if (hasUpgrade("c3", 11)) cm = cm.add(upgradeEffect("c3", 11));
             if (hasUpgrade("c3", 13)) cm = cm.add(upgradeEffect("c3", 13));
@@ -833,7 +852,7 @@ addLayer("c3", {
 
             player.c3.upgrades = [];
             let autoIds = [];
-            if (hasMilestone("c4", 1) || hasMilestone("c4", 2) || hasMilestone("c4", 3)) autoIds = [11, 12, 13, 14];
+            if (hasMilestone("c4", 2) || hasMilestone("c4", 3)) autoIds = [11, 12, 13, 14];
             else if (hasMilestone("c4", 0)) autoIds = [11, 12];
 
             autoIds.forEach(id => {
@@ -989,7 +1008,7 @@ addLayer("c4", {
     milestones: {
         0: {
             requirementDescription: "拥有 3 点击共鸣",
-            effectDescription: "重置后自动拿前 2 个精准升级",
+            effectDescription: "重置后自动拿前 2 个精准升级，并且发现控制台-1(永久有效)",
             done() { return player.c4.points.gte(3); }
         },
         1: {
@@ -1278,7 +1297,11 @@ addLayer("c6", {
             if (hasUpgrade("c6", 15)) scReduction = scReduction.times(2).min(0.95);
             if (layers.c5 && player.c5.grid && player.c5.grid[202]) scReduction = scReduction.add(player.c5.grid[202] * 0.02);
             if (scReduction.gt(0.95)) scReduction = new Decimal(0.95);
-            if (scReduction.gt(0.8)) scReduction = new Decimal(0.8).add(scReduction.sub(0.8).pow(0.5));
+            if (scReduction.gt(0.8)) {
+                let compExcess = scReduction.sub(0.8);
+                let compLogExp = new Decimal(1).div(compExcess.add(0.01).times(100).add(1).log10().add(1));
+                scReduction = new Decimal(0.8).add(compExcess.pow(compLogExp));
+            }
             let scMult = new Decimal(1).sub(scReduction);
             let bonus = new Decimal(1).div(scMult.max(0.1));
             if (hasUpgrade("c6", 12)) bonus = bonus.times(2);
@@ -1767,4 +1790,120 @@ addLayer("a", {
             done() { return player.c7.points.gte(3); }
         }
     }
+});
+
+addLayer("about", {
+    name: "关于",
+    symbol: "ℹ",
+    row: "side",
+    color: "#24d3ff",
+    style: { 'margin-top': '14px' },
+    layerShown() { return true; },
+    tooltip() { return "关于"; },
+
+    startData() {
+        return {
+            unlocked: true,
+            points: new Decimal(0),
+        }
+    },
+
+    tabFormat: [
+        ["display-text", "这是一个由陈风就是浪制作的模组树-the click tree"],
+        "blank",
+        ["display-text", "目前没啥想写的"],
+    ],
+});
+
+addLayer("ctrl", {
+    name: "控制台-1",
+    symbol: "c-1",
+    row: 7,
+    displayRow: 1,
+    position: 0,
+    color: "#888888",
+    type: "none",
+
+    layerShown() { return hasMilestone("c4", 1) || player.ctrl.unlocked; },
+
+    tooltip() { return "控制台-1"; },
+
+    tooltipLocked() {
+        return `需要 75,000 点击次数 且 5 点击共鸣 来解锁<br>（当前：${formatWhole(player.points)} / 75,000 点击次数，${layers.c4 ? format(player.c4.points) : "0"} / 5 点击共鸣）`;
+    },
+
+    startData() {
+        return {
+            unlocked: false,
+            points: new Decimal(0),
+        }
+    },
+
+    update(diff) {
+        if (!player.ctrl.unlocked && player.points.gte(75000) && layers.c4 && player.c4.points.gte(5)) {
+            player.ctrl.unlocked = true;
+            needCanvasUpdate = true;
+        }
+    },
+
+    tabFormat: [
+        ["display-text", "欢迎来到控制台-1！在这里你可以一站式管理力量/精准/共鸣的重置。"],
+        "blank",
+        ["clickable", 11],
+        "blank",
+        ["display-text", "━━━━ 快捷重置 ━━━━"],
+        ["row", [["clickable", 21], ["clickable", 22], ["clickable", 23]]],
+        "blank",
+        ["display-text", "━━━━ 当前状态 ━━━━"],
+        ["display-text", () => `点击次数：${formatWhole(player.points)}`],
+        ["display-text", () => `点击分数：${format(player.c1.points)}`],
+        ["display-text", () => `点击力量：${layers.c2 ? format(player.c2.points) : "未解锁"}`],
+        ["display-text", () => `点击精准：${layers.c3 ? format(player.c3.points) : "未解锁"}`],
+        ["display-text", () => `点击共鸣：${layers.c4 ? format(player.c4.points) : "未解锁"}`],
+    ],
+
+    clickables: {
+        11: {
+            title: "点击",
+            display() {
+                return `+${format(getClickGain())} 点击分数`;
+            },
+            canClick() { return true; },
+            onClick() { doClick(); },
+            style: { 'height': '80px', 'font-size': '18px' },
+        },
+        21: {
+            title: "重置力量",
+            display() {
+                if (!layers.c2 || !tmp.c2) return "力量层未就绪";
+                if (!tmp.c2.canReset) return "无法重置力量<br>需要 100,000 点击分数";
+                return `获得 +${formatWhole(tmp.c2.resetGain)} 点击力量`;
+            },
+            canClick() { return layers.c2 && tmp.c2 && tmp.c2.canReset; },
+            onClick() { doReset("c2"); },
+            style: { 'background-color': '#FFA500', 'width': '140px', 'height': '70px' },
+        },
+        22: {
+            title: "重置精准",
+            display() {
+                if (!layers.c3 || !tmp.c3) return "精准层未就绪";
+                if (!tmp.c3.canReset) return "无法重置精准<br>需要 50 点击力量";
+                return `获得 +${formatWhole(tmp.c3.resetGain)} 点击精准`;
+            },
+            canClick() { return layers.c3 && tmp.c3 && tmp.c3.canReset; },
+            onClick() { doReset("c3"); },
+            style: { 'background-color': '#FF4444', 'width': '140px', 'height': '70px' },
+        },
+        23: {
+            title: "重置共鸣",
+            display() {
+                if (!layers.c4 || !tmp.c4) return "共鸣层未就绪";
+                if (!tmp.c4.canReset) return "无法重置共鸣<br>需要 30 点击精准";
+                return `获得 +${formatWhole(tmp.c4.resetGain)} 点击共鸣`;
+            },
+            canClick() { return layers.c4 && tmp.c4 && tmp.c4.canReset; },
+            onClick() { doReset("c4"); },
+            style: { 'background-color': '#4488FF', 'width': '140px', 'height': '70px' },
+        },
+    },
 });

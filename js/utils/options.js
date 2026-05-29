@@ -16,6 +16,9 @@ function getStartOptions() {
 		forceTooltips: true,
 		hideMilestonePopups: false,
 		rainbowMode: false,
+		noSelect: false,
+		noZoom: false,
+		compactTree: false,
 	}
 }
 
@@ -28,8 +31,25 @@ function toggleOpt(name) {
 		changeTreeQuality();
 	if (name == "oldStyle")
 		updateStyle();
+	if (["noSelect","noZoom","compactTree"].includes(name)) applyQoL();
 }
 var styleCooldown = 0;
+
+function applyQoL() {
+	document.body.style.userSelect = options.noSelect ? "none" : "";
+	document.body.style.webkitUserSelect = options.noSelect ? "none" : "";
+	let meta = document.querySelector('meta[name="viewport"]');
+	if (!meta) {
+		meta = document.createElement("meta");
+		meta.name = "viewport";
+		document.head.appendChild(meta);
+	}
+	meta.content = options.noZoom
+		? "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		: "width=device-width, initial-scale=1.0";
+	document.documentElement.style.setProperty("--tree-scale", options.compactTree ? "0.7" : "1");
+}
+
 function updateStyle() {
 	styleCooldown = 1;
 	let css = document.getElementById("styleStuff");

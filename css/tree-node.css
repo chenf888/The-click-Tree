@@ -2,6 +2,7 @@
 .treeNode {
 	height: 100px;
 	width: 100px;
+	transform: scale(var(--tree-scale, 1));
 	border: var(--hqProperty1);
 	border-color: rgba(0, 0, 0, 0.125);
 	border-radius: 50%;

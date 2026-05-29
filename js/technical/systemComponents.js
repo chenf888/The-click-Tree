@@ -170,7 +170,12 @@ var systemComponents = {
                 <td><button class="opt" onclick="toggleOpt('hideChallenges')">已完成挑战: {{ options.hideChallenges?"隐藏":"显示" }}</button></td>
                 <td><button class="opt" onclick="toggleOpt('forceOneTab'); needsCanvasUpdate = true">单标签模式: {{ options.forceOneTab?"始终":"自动" }}</button></td>
 				<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift点击切换提示框: {{ options.forceTooltips?"开":"关" }}</button></td>
-				</tr> 
+				</tr>
+			<tr>
+				<td><button class="opt" onclick="toggleOpt('noSelect')">禁止文本选择: {{ options.noSelect?"开":"关" }}</button></td>
+				<td><button class="opt" onclick="toggleOpt('noZoom')">禁止网页缩放: {{ options.noZoom?"开":"关" }}</button></td>
+				<td><button class="opt" onclick="toggleOpt('compactTree')">紧凑树节点（测试）: {{ options.compactTree?"开":"关" }}</button></td>
+            </tr> 
 			<tr>
                 <td><button class="opt" onclick="toggleOpt('hideMilestonePopups')">显示里程碑弹窗: {{ formatOption(!options.hideMilestonePopups) }}</button></td>
                 <td><button class="opt rainbow-btn" onclick="toggleRainbow()">🌈 炫彩模式: {{ options.rainbowMode?'开':'关' }}</button></td>
