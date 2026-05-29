@@ -719,6 +719,7 @@ addLayer("c3", {
             points: new Decimal(0),
             best: new Decimal(0),
             total: new Decimal(0),
+            challenge11Start: new Decimal(0),
         }
     },
 
@@ -842,6 +843,7 @@ addLayer("c3", {
             let savedChallenges = player.c3.challenges;
             let savedBest = player.c3.best;
             let savedTotal = player.c3.total;
+            let savedChallenge11Start = player.c3.challenge11Start;
 
             layerDataReset("c3");
 
@@ -849,6 +851,7 @@ addLayer("c3", {
             player.c3.challenges = savedChallenges;
             player.c3.best = savedBest;
             player.c3.total = savedTotal;
+            if (savedChallenge11Start !== undefined) player.c3.challenge11Start = savedChallenge11Start;
 
             player.c3.upgrades = [];
             let autoIds = [];
@@ -1008,12 +1011,12 @@ addLayer("c4", {
     milestones: {
         0: {
             requirementDescription: "拥有 3 点击共鸣",
-            effectDescription: "重置后自动拿前 2 个精准升级，并且发现控制台-1(永久有效)",
+            effectDescription: "重置后自动拿前 2 个精准升级",
             done() { return player.c4.points.gte(3); }
         },
         1: {
             requirementDescription: "拥有 8 点击共鸣",
-            effectDescription: "节奏不会断！连击中断后保留 5 层",
+            effectDescription: "节奏不会断！连击中断后保留 5 层，并且发现控制台-1(永久有效)",
             done() { return player.c4.points.gte(8); }
         },
         2: {

@@ -271,7 +271,7 @@ function canCompleteChallenge(layer, x)
 {
 	if (x != player[layer].activeChallenge) return
 	let challenge = tmp[layer].challenges[x]
-	if (challenge.canComplete !== undefined) return challenge.canComplete
+	if (challenge.canComplete !== undefined) return run(challenge.canComplete, challenge)
 
 	if (challenge.currencyInternalName){
 		let name = challenge.currencyInternalName
