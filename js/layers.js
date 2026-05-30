@@ -53,14 +53,8 @@ function getClickGain() {
 
     if (layers.c2 && player.c2.points.gt(0)) {
         let rawPow = player.c2.points;
-        let softcapStart = new Decimal(15);
-        let effectivePow;
-        if (rawPow.lte(softcapStart)) {
-            effectivePow = rawPow;
-        } else {
-            let excess = rawPow.sub(softcapStart);
-            effectivePow = softcapStart.add(excess.pow(0.5));
-        }
+        let effectivePow = rawPow;
+        effectivePow = softcap(effectivePow, new Decimal(7), 0.5);
         let basePow = hasUpgrade("c2", 11) ? 1.09 : 1.06;
         if (inChallenge("c2", 11)) basePow = 1.03;
         if (hasChallenge("c2", 11)) basePow += 0.05;
@@ -68,10 +62,16 @@ function getClickGain() {
         let powerBonus = Decimal.pow(basePow, effectivePow);
         if (layers.c2 && layers.c2.buyables) powerBonus = powerBonus.times(buyableEffect("c2", 11));
         if (hasAchievement("a", 16)) powerBonus = powerBonus.times(achievementEffect("a", 16));
-        if (powerBonus.gt(50)) {
-            let bonExcess = powerBonus.sub(50);
-            powerBonus = new Decimal(50).add(bonExcess.pow(0.5).times(5));
-        }
+        powerBonus = softcap(powerBonus, new Decimal(20), 0.5);
+        powerBonus = softcap(powerBonus, new Decimal(50), 0.3);
+        powerBonus = softcap(powerBonus, new Decimal(100), 0.25);
+        powerBonus = softcap(powerBonus, new Decimal(500), 0.15);
+        powerBonus = softcap(powerBonus, new Decimal(1000), 0.1);
+        powerBonus = softcap(powerBonus, new Decimal(20000), 0.01);
+        powerBonus = softcap(powerBonus, new Decimal(5e6), 0.001);
+        powerBonus = softcap(powerBonus, new Decimal(1e7), 0.0005);
+        powerBonus = softcap(powerBonus, new Decimal(5e11), 0.000001);
+        powerBonus = softcap(powerBonus, new Decimal(3e15), 0.00000001);
         base = base.times(powerBonus);
     }
 
@@ -192,13 +192,17 @@ function getClickGain() {
         base = base.times(avg);
     }
 
-    let cap1 = new Decimal(20000);
-    if (base.gt(cap1)) {
-        let excess = base.sub(cap1);
-        let logExp = new Decimal(1.5).div(excess.div(5000).add(1).log10().add(2));
-        base = cap1.add(excess.pow(logExp).times(40));
-    }
-
+    base = softcap(base, new Decimal(1000), 0.7);
+    base = softcap(base, new Decimal(10000), 0.65);
+    base = softcap(base, new Decimal(100000), 0.6);
+    base = softcap(base, new Decimal(5e6), 0.57);
+    base = softcap(base, new Decimal(3e7), 0.55);
+    base = softcap(base, new Decimal(1e8), 0.5);
+    base = softcap(base, new Decimal(3e9), 0.42);
+    base = softcap(base, new Decimal(1e11), 0.39);
+    base = softcap(base, new Decimal(1e13), 0.32);
+    base = softcap(base, new Decimal(1e15), 0.29);
+    base = softcap(base, new Decimal(1e17), 0.21);
     return base;
 }
 
@@ -210,6 +214,25 @@ function doClick() {
     }
     player.c1.points = player.c1.points.add(gain);
     player.points = player.points.add(1);
+
+    if (!player.clickTimes) player.clickTimes = [];
+    let now = Date.now();
+    player.clickTimes.push(now);
+    while (player.clickTimes.length > 0 && now - player.clickTimes[0] > 3000) {
+        player.clickTimes.shift();
+    }
+}
+
+function getClickSpeed() {
+    if (!player || !player.clickTimes || player.clickTimes.length === 0) return 0;
+    let now = Date.now();
+    while (player.clickTimes.length > 0 && now - player.clickTimes[0] > 3000) {
+        player.clickTimes.shift();
+    }
+    if (player.clickTimes.length === 0) return 0;
+    let span = now - player.clickTimes[0];
+    if (span <= 0) span = 100;
+    return player.clickTimes.length / (span / 1000);
 }
 
 addLayer("c1", {
@@ -497,27 +520,24 @@ addLayer("c2", {
             player.c2.activeChallenge = null;
         }
     },
-
     tabFormat: [
         "main-display",
         "prestige-button",
         ["display-text", () => `当前点击分数：${format(player.c1.points)}`],
         ["display-text", () => {
             let rawPow = player.c2.points;
-            let softcapStart = new Decimal(15);
-            let effectivePow = rawPow.lte(softcapStart) ? rawPow : softcapStart.add(rawPow.sub(softcapStart).pow(0.5));
+            let effectivePow = rawPow;
+            effectivePow = softcap(effectivePow, new Decimal(10), 0.6);
             let basePow = hasUpgrade("c2", 11) ? 1.09 : 1.06;
             if (inChallenge("c2", 11)) basePow = 1.03;
             if (hasChallenge("c2", 11)) basePow += 0.05;
             let bonus = Decimal.pow(basePow, effectivePow);
             if (hasAchievement("a", 16)) bonus = bonus.times(achievementEffect("a", 16));
-            if (bonus.gt(50)) {
-                let bonExcess = bonus.sub(50);
-                bonus = new Decimal(50).add(bonExcess.pow(0.5).times(5));
-            }
-            let scNote = rawPow.gt(softcapStart) ? "（软上限）" : "";
-            let scNote2 = bonus.gt(50) ? "（倍率已压缩）" : "";
-            return `力量涌动：每次点击 ×${format(bonus)}${scNote}${scNote2}${hasAchievement("a", 16) ? "（渴望之力加倍！）" : ""}`;
+            let rawBonus = bonus;
+            bonus = softcap(bonus, new Decimal(20), 0.5);
+            bonus = softcap(bonus, new Decimal(50), 0.3);
+            let scNote = bonus.neq(rawBonus) ? "（软上限）" : "";
+            return `力量涌动：每次点击 ×${format(bonus)}${scNote}${hasAchievement("a", 16) ? "（渴望之力加倍！）" : ""}`;
         }],
         "blank",
         "clickables",
@@ -532,7 +552,6 @@ addLayer("c2", {
         "blank",
         "challenges"
     ],
-
     clickables: {
         11: {
             title: "猛击！",
@@ -1814,7 +1833,9 @@ addLayer("about", {
     tabFormat: [
         ["display-text", "这是一个由陈风就是浪制作的模组树-the click tree"],
         "blank",
-        ["display-text", "目前没啥想写的"],
+        ["display-text", "可以说是全世界最烂的模组树了"],
+        "blank",
+        ["display-text", "长期点击屏幕或鼠标可能引发腱鞘炎，建议使用连点器游玩"],
     ],
 });
 

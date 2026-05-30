@@ -11,11 +11,14 @@ let modInfo = {
 }
 
 let VERSION = {
-	num: "0.32",
+	num: "0.33",
 	name: "The Click Tree",
 }
 
 let changelog = `<h1>更新日志：</h1><br>
+    <h3>v0.33</h3><br>
+	    更改了软上限机制，现在为手动软上限（全球最烂）<br>
+	    添加了点击速度显示<br>
     <h3>v0.32</h3><br>
         修了一些bug，更改了游戏部分机制，添加了更多软上限<br>
 		删除了100个主题<br>
@@ -57,12 +60,17 @@ function getPointGen() {
 	if (!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(0)
-	return gain
+	if (typeof getClickSpeed === "function") {
+		let spd = getClickSpeed()
+		if (isNaN(spd) || spd < 0) spd = 0
+		return new Decimal(spd)
+	}
+	return new Decimal(0)
 }
 
 function addedPlayerData() {
 	return {
+		clickTimes: [],
 	}
 }
 
