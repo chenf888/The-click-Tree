@@ -136,6 +136,10 @@ function fixSave() {
 	fixData(defaultData, player);
 
 	for (layer in layers) {
+		if (player[layer].unlocked === undefined)
+			player[layer].unlocked = false;
+		if (player[layer].points !== undefined)
+			player[layer].points = new Decimal(player[layer].points);
 		if (player[layer].best !== undefined)
 			player[layer].best = new Decimal(player[layer].best);
 		if (player[layer].total !== undefined)
