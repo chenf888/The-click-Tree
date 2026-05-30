@@ -57,14 +57,6 @@ function canGenPoints() {
 }
 
 function getPointGen() {
-	if (!canGenPoints())
-		return new Decimal(0)
-
-	if (typeof getClickSpeed === "function") {
-		let spd = getClickSpeed()
-		if (isNaN(spd) || spd < 0) spd = 0
-		return new Decimal(spd)
-	}
 	return new Decimal(0)
 }
 
