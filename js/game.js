@@ -270,7 +270,8 @@ function startChallenge(layer, x) {
 function canCompleteChallenge(layer, x)
 {
 	if (x != player[layer].activeChallenge) return
-	let challenge = tmp[layer].challenges[x]
+	let challenge = tmp[layer].challenges && tmp[layer].challenges[x]
+	if (!challenge) return
 	if (challenge.canComplete !== undefined) return run(challenge.canComplete, challenge)
 
 	if (challenge.currencyInternalName){

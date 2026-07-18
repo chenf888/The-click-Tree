@@ -144,6 +144,9 @@ function fixSave() {
 			player[layer].best = new Decimal(player[layer].best);
 		if (player[layer].total !== undefined)
 			player[layer].total = new Decimal(player[layer].total);
+		// 清除已删除挑战层级的残留 activeChallenge
+		if ((layer === "c2" || layer === "c3") && player[layer].activeChallenge)
+			player[layer].activeChallenge = null;
 
 		if (layers[layer].tabFormat && !Array.isArray(layers[layer].tabFormat)) {
 
