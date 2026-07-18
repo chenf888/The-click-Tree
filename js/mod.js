@@ -11,11 +11,13 @@ let modInfo = {
 }
 
 let VERSION = {
-	num: "0.33",
+	num: "0.34",
 	name: "The Click Tree",
 }
 
 let changelog = `<h1>更新日志：</h1><br>
+    <h3>v0.34</h3><br>
+	    删除了c2c3挑战
     <h3>v0.33</h3><br>
 	    更改了软上限机制，现在为手动软上限（全球最烂）<br>
 	    添加了点击速度显示<br>
