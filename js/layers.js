@@ -56,8 +56,6 @@ function getClickGain() {
         let effectivePow = rawPow;
         effectivePow = softcap(effectivePow, new Decimal(7), 0.5);
         let basePow = hasUpgrade("c2", 11) ? 1.09 : 1.06;
-        if (inChallenge("c2", 11)) basePow = 1.03;
-        if (hasChallenge("c2", 11)) basePow += 0.05;
         if (layers.c5 && player.c5.grid && player.c5.grid[101]) basePow += player.c5.grid[101] * 0.02;
         let powerBonus = Decimal.pow(basePow, effectivePow);
         if (layers.c2 && layers.c2.buyables) powerBonus = powerBonus.times(buyableEffect("c2", 11));
@@ -83,7 +81,6 @@ function getClickGain() {
         if (hasAchievement("a", 17)) critChance = Math.min(critChance + achievementEffect("a", 17).toNumber(), critCap);
         if (hasMilestone("c5", 1)) critChance = Math.min(critChance + 0.5, 1);
         if (hasUpgrade("c3", 12)) critChance = Math.min(critChance + 0.05, critCap);
-        if (hasChallenge("c3", 11)) critChance = Math.min(critChance + 0.05, critCap);
         if (layers.c3 && layers.c3.buyables) critChance = Math.min(critChance + buyableEffect("c3", 11).toNumber(), critCap);
 
         let critMult = new Decimal(3);
@@ -91,8 +88,6 @@ function getClickGain() {
         if (hasUpgrade("c3", 13)) critMult = critMult.add(upgradeEffect("c3", 13));
         if (hasAchievement("a", 18)) critMult = critMult.add(achievementEffect("a", 18));
         if (layers.c5 && player.c5.grid && player.c5.grid[102]) critMult = critMult.add(player.c5.grid[102] * 0.5);
-
-        if (inChallenge("c3", 11)) critChance = 0;
 
         window._critChance = critChance;
         window._critMult = critMult;
@@ -515,10 +510,6 @@ addLayer("c2", {
 
     onPrestige(gain) {
         window._savedClickCount = player.points;
-        if (inChallenge("c2", 11) && gain && gain.gte(20)) {
-            player.c2.challenges[11] = (player.c2.challenges[11] || 0) + 1;
-            player.c2.activeChallenge = null;
-        }
     },
     tabFormat: [
         "main-display",
@@ -529,8 +520,6 @@ addLayer("c2", {
             let effectivePow = rawPow;
             effectivePow = softcap(effectivePow, new Decimal(10), 0.6);
             let basePow = hasUpgrade("c2", 11) ? 1.09 : 1.06;
-            if (inChallenge("c2", 11)) basePow = 1.03;
-            if (hasChallenge("c2", 11)) basePow += 0.05;
             let bonus = Decimal.pow(basePow, effectivePow);
             if (hasAchievement("a", 16)) bonus = bonus.times(achievementEffect("a", 16));
             let rawBonus = bonus;
@@ -608,20 +597,6 @@ addLayer("c2", {
         }
     },
 
-    challenges: {
-        11: {
-            name: "力竭",
-            challengeDescription: "力量被抽干！倍率基础降至 1.05",
-            goalDescription: "一次重置获得 20 点击力量",
-            rewardDescription: "永久力量倍率基础 +0.05",
-            canComplete() { return false; },
-            onEnter() { },
-            onExit() { },
-            onComplete() { },
-            unlocked() { return hasMilestone("c2", 0); }
-        }
-    },
-
     bars: {
         powerGauge: {
             direction: RIGHT,
@@ -679,10 +654,7 @@ addLayer("c2", {
 
     doReset(resettingLayer) {
 
-        if (resettingLayer === this.layer) {
-            if (inChallenge("c2", 11)) Vue.set(player.c2, "activeChallenge", 11);
-            return;
-        }
+        if (resettingLayer === this.layer) return;
 
         if (resettingLayer === "c3" || resettingLayer === "c4" || resettingLayer === "c5" || resettingLayer === "c6" || resettingLayer === "c7") {
             let savedMilestones = player.c2.milestones;
@@ -738,7 +710,6 @@ addLayer("c3", {
             points: new Decimal(0),
             best: new Decimal(0),
             total: new Decimal(0),
-            challenge11Start: new Decimal(0),
         }
     },
 
@@ -755,7 +726,6 @@ addLayer("c3", {
             if (hasAchievement("a", 17)) cc = Math.min(cc + achievementEffect("a", 17).toNumber(), hasUpgrade("c3", 14) ? 0.9 : 0.75);
             if (hasMilestone("c5", 1)) cc = Math.min(cc + 0.5, 1);
             if (hasUpgrade("c3", 12)) cc = Math.min(cc + 0.05, hasUpgrade("c3", 14) ? 0.9 : 0.75);
-            if (hasChallenge("c3", 11)) cc = Math.min(cc + 0.05, hasUpgrade("c3", 14) ? 0.9 : 0.75);
             let cm = new Decimal(3);
             if (hasUpgrade("c3", 11)) cm = cm.add(upgradeEffect("c3", 11));
             if (hasUpgrade("c3", 13)) cm = cm.add(upgradeEffect("c3", 13));
@@ -772,9 +742,7 @@ addLayer("c3", {
         "blank",
         "buyables",
         "blank",
-        "milestones",
-        "blank",
-        "challenges"
+        "milestones"
     ],
 
     clickables: {
@@ -815,26 +783,6 @@ addLayer("c3", {
         }
     },
 
-    challenges: {
-        11: {
-            name: "镣铐之舞",
-            challengeDescription: "基础暴击率被封印，无法享受暴击系统的加成。",
-            goalDescription: "在挑战中累积获得 100 点击力量（以历史最高为准）",
-            rewardDescription: "永久暴击率 +5%",
-            canComplete() {
-                if (player.c3.challenge11Start === undefined) return false;
-                let gained = player.c2.best.sub(player.c3.challenge11Start);
-                return gained.gte(100);
-            },
-            onEnter() {
-                player.c3.challenge11Start = player.c2.best;
-            },
-            onExit() { },
-            onComplete() { },
-            unlocked() { return hasMilestone("c3", 0); }
-        }
-    },
-
     milestones: {
         0: {
             requirementDescription: "拥有 3 点击精准",
@@ -862,15 +810,11 @@ addLayer("c3", {
             let savedChallenges = player.c3.challenges;
             let savedBest = player.c3.best;
             let savedTotal = player.c3.total;
-            let savedChallenge11Start = player.c3.challenge11Start;
 
             layerDataReset("c3");
 
             player.c3.milestones = savedMilestones;
             player.c3.challenges = savedChallenges;
-            player.c3.best = savedBest;
-            player.c3.total = savedTotal;
-            if (savedChallenge11Start !== undefined) player.c3.challenge11Start = savedChallenge11Start;
 
             player.c3.upgrades = [];
             let autoIds = [];
